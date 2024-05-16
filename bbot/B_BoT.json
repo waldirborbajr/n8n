@@ -1,0 +1,609 @@
+{
+  "name": "B-BoT",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "ffccb816-7dfc-4790-991e-0c194a41c12f",
+              "leftValue": "={{ $('Webhook').item.json.body.content.toLowerCase() }}",
+              "rightValue": "=iniciar",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "3d91b529-0a4c-4b4c-966f-072b5b6d4549",
+      "name": "start",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        240,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "a4861d6a-d7dd-4a97-8040-46bbf884e9f5",
+              "leftValue": "={{ $('Webhook').item.json.body.wook }}",
+              "rightValue": "RECEIVE_MESSAGE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "10e19bb6-e9dc-4005-a538-8afd79fd629e",
+              "leftValue": "={{ $('Webhook').item.json.body.isGroupMsg }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a97bf8ec-79db-4941-a3f9-02c1ce825cfb",
+      "name": "receive_msg",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        20,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Olá *{{ $('Webhook').item.json.body.name.split(\" \")[0] }}* 👋\n\nSeja bem vindo ao auto atendimento da *Firma XPTO*. \n\nPara dar sequência ao atendimento, preciso que voce escolha uma das opções abaixo.\n\n*1* - Abrir um chamado\n*2* - Comsultar chamado aberto anteriormente\n*3* - Encerrar o atendimento"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cc6c217b-8e5e-4133-bb65-6e15309a5478",
+      "name": "display-menu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0149f53d-fff1-4c46-8c51-3982c1405045",
+              "name": "endpoint",
+              "value": "https://teste.uzapi.com.br:3333",
+              "type": "string"
+            },
+            {
+              "id": "2a8ddc04-d6d7-46c0-a344-72f78c4acccb",
+              "name": "session",
+              "value": "bbot",
+              "type": "string"
+            },
+            {
+              "id": "52f84584-b6b9-4063-97e1-f1ff4c0c69cd",
+              "name": "sessionKey",
+              "value": "bbot",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aaa2b4c6-a490-46b3-ac87-42c9b93b0f70",
+      "name": "parameters",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -160,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b-bot",
+        "options": {}
+      },
+      "id": "d107629d-2603-4ae5-b4e6-dc85f048fbb5",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        640
+      ],
+      "webhookId": "ff632b93-b744-41b0-92e7-9fad3c291839"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Tudo bem *{{ $('Webhook').item.json.body.name }}*.\n\nPara consultar o andamento do seu chamado, escolha qual dos chamados voce gostaria de verificar:\n\n*A* - 999x9xx999\n*B* - 888x9xx777\n*C* - 333x6xx555"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "78815d27-d953-429b-b9f2-7f8d738f0984",
+      "name": "display-menu2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=*{{ $('Webhook').item.json.body.name }}*, muito obrigado pelo seu contato. Sempre que precisar, falar comigo, basta digitar *iniciar*.\n\nA *Firma XPTO*, agradece seu contato."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1c191c05-5cea-4984-9189-95067c86d080",
+      "name": "display-menu3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        1020
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Tudo bem *{{ $('Webhook').item.json.body.name.split(\" \")[0] }}*, para darmos andamento a abertura do seu chamado, preciso que voce digite o *CEP* ou a *MÁTRICULA* do seu local de atendimento."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c126ad3e-4f5a-4538-96db-c995f064530f",
+      "name": "option-1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook').item.json.body.content }}",
+                    "rightValue": "=1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "open"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "ed19b39b-99b2-4b23-aef0-307dd1bb384c",
+                    "leftValue": "={{ $('Webhook').item.json.body.content }}",
+                    "rightValue": "2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "search"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "873a192d-ebd2-4df1-964e-4756a90841ef",
+                    "leftValue": "={{ $('Webhook').item.json.body.content }}",
+                    "rightValue": "3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "finish"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "id": "3afb0d15-5ecb-480d-b39a-915436a30524",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        680,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "4677e037-d001-49cb-a421-f59905908c93",
+              "leftValue": "={{ $('Webhook').item.json.body.content.length }}",
+              "rightValue": 8,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f0b4c463-2c2d-4041-a35c-b1097d94d345",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        440,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://viacep.com.br/ws/{{ $('Webhook').item.json.body.content }}/json/ ",
+        "options": {}
+      },
+      "id": "c9cb495b-8851-4863-9db0-cbe22ffa8a58",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "{{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Certo *{{ $('Webhook').item.json.body.name.split(\" \")[0] }}*, você desejar solicitar um atendimento para o seguinte endereço:\n\n{{ $json[\"cep\"] }}\n{{ $json[\"logradouro\"] }}\n{{ $json[\"bairro\"] }}\n{{ $json[\"localidade\"] }} / {{ $json[\"uf\"] }}\n\nDeseja prosseguir?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4825bd2d-0c10-44d3-a370-736efce4fe37",
+      "name": "option-",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        580
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "start": {
+      "main": [
+        [
+          {
+            "node": "display-menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "receive_msg": {
+      "main": [
+        [
+          {
+            "node": "start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parameters": {
+      "main": [
+        [
+          {
+            "node": "receive_msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "option-1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "display-menu2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "display-menu3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "option-",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "70980ab8-0828-48b0-924a-44ad52d093a2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f529964ec142b683b8d6fb1b1061b8c872558a9ac9ba4a71dc5384e4d45db503"
+  },
+  "id": "nhAFsmm1E7PiGPHP",
+  "tags": []
+}
