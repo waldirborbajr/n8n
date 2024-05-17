@@ -1,0 +1,62 @@
+{
+  "name": "Criador de Banco",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE typebot (\n    id SERIAL PRIMARY KEY,\n    id_usuarioty VARCHAR(255),\n    id_workspacety VARCHAR(255),\n    id_chatwoot INTEGER,\n    nome VARCHAR(255),\n    email VARCHAR(255),\n    status VARCHAR(50)\n);\n",
+        "options": {}
+      },
+      "id": "b9ad5321-324e-4aba-827b-e46283d3644c",
+      "name": "Cria a tabela",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        1000,
+        340
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "sD0KfDshuFBs7TzV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "7e7a2548-6036-49c3-9f4a-5730c796d62d",
+      "name": "When clicking \"Test workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        820,
+        340
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking \"Test workflow\"": {
+      "main": [
+        [
+          {
+            "node": "Cria a tabela",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ab421f55-2588-4f86-a8c5-ad1f1922a7a2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "A26Q6nBc7deKRlB6",
+  "tags": []
+}

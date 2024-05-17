@@ -1,0 +1,12 @@
+Criar o Banco
+
+psql -U postgres
+
+create database typebot_controle;
+
+Tema Criador de Empresa:
+
+Nome Usuario Administrador: Raphael
+Nome da Empresa: AstraOnline
+Email: machineteste24@gmail.com
+Senha: Mfcd62!!
