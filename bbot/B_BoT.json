@@ -30,8 +30,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -80,
-        1300
+        -580,
+        -80
       ],
       "disabled": true
     },
@@ -111,8 +111,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1440,
-        980
+        -620,
+        -620
       ]
     },
     {
@@ -156,8 +156,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1440,
-        1120
+        -620,
+        -480
       ]
     },
     {
@@ -190,7 +190,7 @@
             },
             {
               "name": "text",
-              "value": "=Tudo bem *{{ $('Webhook').item.json.body.name.split(\" \")[0] }}*, para darmos andamento a abertura do seu chamado, preciso que voce digite somente o número do *CEP* ou da *MÁTRICULA* do seu local de atendimento."
+              "value": "=Tudo bem *{{ $('Webhook').item.json.body.name.split(\" \")[0] }}*, para darmos andamento a abertura do seu chamado, preciso que voce digite somente o número do *CEP* para atendimento."
             }
           ]
         },
@@ -201,50 +201,9 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1440,
-        840
+        920,
+        420
       ]
-    },
-    {
-      "parameters": {
-        "url": "=https://viacep.com.br/ws/{{ $('Webhook').item.json.body.content }}/json/ ",
-        "options": {}
-      },
-      "id": "9c84440b-2b1c-4ac3-b27c-d17c5cb3887d",
-      "name": "HTTP Request",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        400,
-        1260
-      ]
-    },
-    {
-      "parameters": {
-        "tableId": "chamados",
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "cep",
-              "fieldValue": "={{ $('Webhook').item.json.body.content }}"
-            }
-          ]
-        }
-      },
-      "id": "17001d51-4bf4-4d4f-a7bb-574879634ff5",
-      "name": "Supabase",
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        660,
-        1160
-      ],
-      "credentials": {
-        "supabaseApi": {
-          "id": "5CV2k8yPhUBY6jzs",
-          "name": "Supabase account"
-        }
-      }
     },
     {
       "parameters": {
@@ -274,70 +233,9 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        160,
-        1320
+        740,
+        680
       ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "sessionKey",
-              "value": "={{ $('parameters').item.json.sessionKey }}"
-            },
-            {
-              "name": "content-type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "session",
-              "value": "={{ $('parameters').item.json.session }}"
-            },
-            {
-              "name": "number",
-              "value": "={{ $('Webhook').item.json.body.sender }}"
-            },
-            {
-              "name": "text",
-              "value": "=Certo *{{ $('Webhook').item.json.body.name }}*, você desejar solicitar um atendimento para o seguinte endereço:\n\n{{ $('HTTP Request').item.json[\"cep\"] }}\n{{ $('HTTP Request').item.json.logradouro }}\n{{ $('HTTP Request').item.json[\"bairro\"]  }}\n{{ $('HTTP Request').item.json[\"localidade\"] }} - {{ $('HTTP Request').item.json[\"uf\"] }}\n\nDeseja prosseguir? "
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "0ca46a5f-d1dd-4bdf-9db1-edb4399e3275",
-      "name": "display-menu1",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        880,
-        1160
-      ]
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "b-bot",
-        "options": {}
-      },
-      "id": "464b2835-cb95-4154-81d1-81ec4b312982",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        -560,
-        640
-      ],
-      "webhookId": "ff632b93-b744-41b0-92e7-9fad3c291839"
     },
     {
       "parameters": {
@@ -444,232 +342,6 @@
     },
     {
       "parameters": {
-        "tableId": "workflow",
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "sender",
-              "fieldValue": "={{ $('Webhook').item.json.body.sender }}"
-            },
-            {
-              "fieldId": "step",
-              "fieldValue": "ask-name"
-            }
-          ]
-        }
-      },
-      "id": "125a132c-d39a-454e-8411-8471a6c2e0b8",
-      "name": "add-sender_ask-name",
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        700,
-        360
-      ],
-      "credentials": {
-        "supabaseApi": {
-          "id": "5CV2k8yPhUBY6jzs",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "5ea2dadd-7879-472e-a60a-711b2ca138c2",
-              "leftValue": "={{ $json.step }}",
-              "rightValue": "ask-name",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "d6701e03-d285-425f-a8c6-df3215db419f",
-      "name": "step-ask_name?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        480,
-        640
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "5ea2dadd-7879-472e-a60a-711b2ca138c2",
-              "leftValue": "={{ $json.step }}",
-              "rightValue": "ask-email",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "16af2740-62cc-4967-9d1d-f65a01d691ba",
-      "name": "step-ask_email?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        700,
-        800
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "sessionKey",
-              "value": "={{ $('parameters').item.json.sessionKey }}"
-            },
-            {
-              "name": "content-type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "session",
-              "value": "={{ $('parameters').item.json.session }}"
-            },
-            {
-              "name": "number",
-              "value": "={{ $('Webhook').item.json.body.sender }}"
-            },
-            {
-              "name": "text",
-              "value": "=Obrigado, *{{ $('Webhook').item.json[\"body\"][\"content\"] }}*. \n\nAgora por favor, informe seu email.\n"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "2239f0a6-38fe-49a8-a471-a7ff17fe6db5",
-      "name": "ask-email",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        700,
-        560
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "sessionKey",
-              "value": "={{ $('parameters').item.json.sessionKey }}"
-            },
-            {
-              "name": "content-type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "session",
-              "value": "={{ $('parameters').item.json.session }}"
-            },
-            {
-              "name": "number",
-              "value": "={{ $('Webhook').item.json.body.sender }}"
-            },
-            {
-              "name": "text",
-              "value": "=Olá 👋, seja bem vindo! \n\nEu sou a *IAra*, *assistente virtual* 🤖 da *XPTO Company*.\n\nPara iniciarmos o atendimento, informe seu *primeiro nome*\n"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "f2edb4ad-8e8b-48ad-b127-b404709ef19b",
-      "name": "ask-name",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        480,
-        440
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "tableId": "workflow",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "sender",
-              "condition": "eq",
-              "keyValue": "={{ $('Webhook').item.json.body.sender }}"
-            }
-          ]
-        },
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "step",
-              "fieldValue": "ask-email"
-            },
-            {
-              "fieldId": "name",
-              "fieldValue": "={{ $('Webhook').item.json.body.content }}"
-            }
-          ]
-        }
-      },
-      "id": "8359b6f8-8922-47d6-a59d-b6d8be8416f1",
-      "name": "add-name_ask-email",
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        920,
-        560
-      ],
-      "credentials": {
-        "supabaseApi": {
-          "id": "5CV2k8yPhUBY6jzs",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "operation": "update",
         "tableId": "workflow",
         "filters": {
@@ -699,8 +371,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1160,
-        740
+        -60,
+        -660
       ],
       "credentials": {
         "supabaseApi": {
@@ -750,40 +422,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        920,
-        740
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "5ea2dadd-7879-472e-a60a-711b2ca138c2",
-              "leftValue": "={{ $json.step }}",
-              "rightValue": "ask-menu",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "0299dfce-3471-4eec-bd56-a61a3a178e08",
-      "name": "step-ask_menu",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        920,
-        940
+        -160,
+        -520
       ]
     },
     {
@@ -871,25 +511,712 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        1160,
+        -840,
+        -680
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Olá *{{ $('Webhook').item.json.body.name.split(\" \")[0] }}* 👋, seja bem vindo! \n\nEu sou a *IAra*, *assistente virtual* 🤖 da *XPTO Company*.\n\nPara dar sequência ao atendimento, *digite o número da opção desejada:*\n\n*1* - Abrir um chamado\n*2* - Consultar chamado\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f2edb4ad-8e8b-48ad-b127-b404709ef19b",
+      "name": "greeting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook').item.json.body.content }}",
+                    "rightValue": "1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "1"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "5ec9bf3f-f420-4b93-840c-c88d29349a5e",
+                    "leftValue": "={{ $('Webhook').item.json.body.content }}",
+                    "rightValue": "2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9d42569d-01b6-4ea6-aa19-3568a58445ea",
+      "name": "option_1_2",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        740,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Obrigado, *{{ $('Webhook').item.json[\"body\"][\"content\"] }}*. \n\nAgora por favor, informe seu email.\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "882e4246-acba-4e14-8745-b5b9daf34a88",
+      "name": "ask-email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -760,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Certo, para darmos andamento a consulta do seu protocolo, escolha o número de qual protocolo deseja saber o andamento:\n\n*1* - xxxxxxxx \n*2* - xxxxxxxx \n*3* - xxxxxxxx \n*4* - xxxxxxxx "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3c23615b-bbb2-4eed-9cc5-5e4174dd8adb",
+      "name": "option-2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://viacep.com.br/ws/{{ $('Webhook').item.json.body.content }}/json/ ",
+        "options": {}
+      },
+      "id": "9c84440b-2b1c-4ac3-b27c-d17c5cb3887d",
+      "name": "search-cep",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workflow",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "sender",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').item.json.body.sender }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "step",
+              "fieldValue": "search_cep"
+            }
+          ]
+        }
+      },
+      "id": "a24e5d60-a7db-45fc-b879-3fd554fc0b42",
+      "name": "stp-search-cep",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        740
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "5CV2k8yPhUBY6jzs",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workflow",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "sender",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').item.json.body.sender }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "step",
+              "fieldValue": "opt_two"
+            }
+          ]
+        }
+      },
+      "id": "2659d588-6150-4868-beac-2d535abbd732",
+      "name": "stp-opt_two",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        580
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "5CV2k8yPhUBY6jzs",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "workflow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sender",
+              "fieldValue": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "fieldId": "step",
+              "fieldValue": "greeting"
+            },
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $('Webhook').item.json.body.name }}"
+            }
+          ]
+        }
+      },
+      "id": "125a132c-d39a-454e-8411-8471a6c2e0b8",
+      "name": "stp-greeting",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        740,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "5CV2k8yPhUBY6jzs",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b-bot",
+        "options": {}
+      },
+      "id": "464b2835-cb95-4154-81d1-81ec4b312982",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        640
+      ],
+      "webhookId": "ff632b93-b744-41b0-92e7-9fad3c291839"
+    },
+    {
+      "parameters": {
+        "tableId": "chamados",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "cep",
+              "fieldValue": "={{ $('Webhook').item.json.body.content }}"
+            }
+          ]
+        }
+      },
+      "id": "17001d51-4bf4-4d4f-a7bb-574879634ff5",
+      "name": "add-os",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        740
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "5CV2k8yPhUBY6jzs",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workflow",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "sender",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').item.json.body.sender }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "step",
+              "fieldValue": "opt_one"
+            }
+          ]
+        }
+      },
+      "id": "8359b6f8-8922-47d6-a59d-b6d8be8416f1",
+      "name": "stp-opt-one",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        420
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "5CV2k8yPhUBY6jzs",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Certo *{{ $('Webhook').item.json.body.name }}*, você desejar solicitar um atendimento para o seguinte endereço:\n\n{{ $('search-cep').item.json[\"cep\"] }}\n{{ $('search-cep').item.json.logradouro }}\n{{ $('search-cep').item.json[\"bairro\"]  }}\n{{ $('search-cep').item.json[\"localidade\"] }} - {{ $('search-cep').item.json[\"uf\"] }}\n\nDigite o número da residência para atendimento ou *fim* para encerrar atendimento."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0ca46a5f-d1dd-4bdf-9db1-edb4399e3275",
+      "name": "show-addr",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.step }}",
+                    "rightValue": "greeting",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "greeting"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "80cc3b19-5d97-42e9-a6e1-bcea094848b4",
+                    "leftValue": "={{ $json.step }}",
+                    "rightValue": "opt_one",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "opt_one"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "ac75cb82-c1ca-405e-bae3-c8ddc081a522",
+                    "leftValue": "={{ $json.step }}",
+                    "rightValue": "search_cep",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "search_cep"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7944d609-538c-4807-bc48-3de0c204a8a6",
+      "name": "which-step?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        480,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workflow",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "sender",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').item.json.body.sender }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "step",
+              "fieldValue": "end"
+            }
+          ]
+        }
+      },
+      "id": "d4a4731f-2a01-463a-a71f-fcd4109db029",
+      "name": "end",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        900
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "5CV2k8yPhUBY6jzs",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=A *Firma XPTO* agradece por entrar em contato e te esperamos em uma nova oportunidade."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a7ed699e-dfae-42bd-83be-ca578274589e",
+      "name": "goodbye2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Atendimento encerrado.\nPermanecemos a sua disposição."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d26be28b-6688-40bc-8a9f-ec603e1874d5",
+      "name": "goodbye",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1140,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook').item.json.body.content.toLowerCase() }}",
+                    "rightValue": "fim",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "fim"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "299325b7-2b22-45cf-a2e9-8ac92db5f080",
+      "name": "end_continue",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        740,
         900
       ]
     }
   ],
   "pinData": {},
   "connections": {
-    "start": {
-      "main": [
-        [],
-        [
-          {
-            "node": "validate-cep",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "parameters": {
       "main": [
         [
@@ -901,44 +1228,11 @@
         ]
       ]
     },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Supabase",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "validate-cep": {
       "main": [
         [
           {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Supabase": {
-      "main": [
-        [
-          {
-            "node": "display-menu1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "parameters",
+            "node": "search-cep",
             "type": "main",
             "index": 0
           }
@@ -971,94 +1265,14 @@
       "main": [
         [
           {
-            "node": "ask-name",
+            "node": "greeting",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "step-ask_name?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "step-ask_name?": {
-      "main": [
-        [
-          {
-            "node": "ask-email",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "step-ask_email?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "step-ask_email?": {
-      "main": [
-        [
-          {
-            "node": "menu_options",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "step-ask_menu",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ask-email": {
-      "main": [
-        [
-          {
-            "node": "add-name_ask-email",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ask-name": {
-      "main": [
-        [
-          {
-            "node": "add-sender_ask-name",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "menu_options": {
-      "main": [
-        [
-          {
-            "node": "add-email_ask-menu",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "step-ask_menu": {
-      "main": [
-        [
-          {
-            "node": "Switch",
+            "node": "which-step?",
             "type": "main",
             "index": 0
           }
@@ -1067,13 +1281,7 @@
     },
     "Switch": {
       "main": [
-        [
-          {
-            "node": "option-1",
-            "type": "main",
-            "index": 0
-          }
-        ],
+        [],
         [
           {
             "node": "display-menu2",
@@ -1089,6 +1297,159 @@
           }
         ]
       ]
+    },
+    "greeting": {
+      "main": [
+        [
+          {
+            "node": "stp-greeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "option_1_2": {
+      "main": [
+        [
+          {
+            "node": "option-1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "option-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "option-1": {
+      "main": [
+        [
+          {
+            "node": "stp-opt-one",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "option-2": {
+      "main": [
+        [
+          {
+            "node": "stp-opt_two",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search-cep": {
+      "main": [
+        [
+          {
+            "node": "add-os",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add-os": {
+      "main": [
+        [
+          {
+            "node": "show-addr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "show-addr": {
+      "main": [
+        [
+          {
+            "node": "stp-search-cep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "which-step?": {
+      "main": [
+        [
+          {
+            "node": "option_1_2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "validate-cep",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "end_continue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "goodbye2": {
+      "main": [
+        [
+          {
+            "node": "goodbye",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "goodbye": {
+      "main": [
+        [
+          {
+            "node": "end",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "end_continue": {
+      "main": [
+        [
+          {
+            "node": "goodbye2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1097,7 +1458,7 @@
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "05934cd9-04bb-4c7d-97eb-5bc5791fde85",
+  "versionId": "d91c506c-dcec-420c-a222-d0ab52318e82",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f529964ec142b683b8d6fb1b1061b8c872558a9ac9ba4a71dc5384e4d45db503"
