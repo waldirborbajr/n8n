@@ -686,10 +686,11 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -2160,
-        1800
+        -200,
+        520
       ],
-      "webhookId": "ba96c820-d07e-479d-9a30-9f6489ec06bb"
+      "webhookId": "ba96c820-d07e-479d-9a30-9f6489ec06bb",
+      "disabled": true
     },
     {
       "parameters": {
@@ -709,8 +710,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -1960,
-        1800
+        0,
+        520
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -718,7 +719,8 @@
           "id": "5CV2k8yPhUBY6jzs",
           "name": "Supabase account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -729,9 +731,26 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -1740,
-        1800
-      ]
+        220,
+        520
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b-bot",
+        "options": {}
+      },
+      "id": "c293b513-e7e1-46dd-8a3f-48d43bb4c092",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2400,
+        860
+      ],
+      "webhookId": "ff632b93-b744-41b0-92e7-9fad3c291839"
     },
     {
       "parameters": {
@@ -823,15 +842,16 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -1280,
-        1740
+        680,
+        460
       ],
       "credentials": {
         "supabaseApi": {
           "id": "5CV2k8yPhUBY6jzs",
           "name": "Supabase account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -874,9 +894,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1500,
-        1740
-      ]
+        460,
+        460
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -1133,47 +1154,6 @@
           "name": "Supabase account"
         }
       }
-    },
-    {
-      "parameters": {
-        "workflowId": "={{ $workflow.id }}",
-        "options": {}
-      },
-      "id": "4f8b3adc-8b31-4379-8385-80fa120fe247",
-      "name": "inactivity",
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1,
-      "position": [
-        320,
-        820
-      ]
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "b-bot",
-        "options": {}
-      },
-      "id": "c293b513-e7e1-46dd-8a3f-48d43bb4c092",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        -2400,
-        860
-      ],
-      "webhookId": "ff632b93-b744-41b0-92e7-9fad3c291839"
-    },
-    {
-      "parameters": {},
-      "id": "7682fa95-a2cc-4cc9-ace9-edba6b669b9a",
-      "name": "inactivity-sleep",
-      "type": "n8n-nodes-base.executeWorkflowTrigger",
-      "typeVersion": 1,
-      "position": [
-        -2360,
-        1800
-      ]
     }
   ],
   "pinData": {},
@@ -1332,7 +1312,7 @@
       "main": [
         [
           {
-            "node": "inactivity",
+            "node": "wait",
             "type": "main",
             "index": 0
           }
@@ -1343,7 +1323,7 @@
       "main": [
         [
           {
-            "node": "inactivity",
+            "node": "wait",
             "type": "main",
             "index": 0
           }
@@ -1354,7 +1334,7 @@
       "main": [
         [
           {
-            "node": "inactivity",
+            "node": "wait",
             "type": "main",
             "index": 0
           }
@@ -1365,7 +1345,7 @@
       "main": [
         [
           {
-            "node": "inactivity",
+            "node": "wait",
             "type": "main",
             "index": 0
           }
@@ -1399,6 +1379,17 @@
         [
           {
             "node": "timeout-msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "parameters",
             "type": "main",
             "index": 0
           }
@@ -1495,29 +1486,7 @@
         ]
       ]
     },
-    "end": {
-      "main": [
-        [
-          {
-            "node": "inactivity",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "parameters",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "inactivity-sleep": {
+    "stp-greeting-welcome": {
       "main": [
         [
           {
@@ -1533,7 +1502,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2afe0edc-76e6-4a7a-97dc-9e296ecc439c",
+  "versionId": "09d84156-6cf1-488a-b8e9-094c80efaed0",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f529964ec142b683b8d6fb1b1061b8c872558a9ac9ba4a71dc5384e4d45db503"
