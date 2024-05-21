@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+  mongodb:
+    image: mongo:7
+    command: mongod --port 27017
+    networks:
+      - minha_rede
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_configdb_data:/data/configdb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=Mfcd62!!Mfcd62!!
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 27017:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+
+volumes:
+  mongodb_data:
+    external: true
+    name: mongodb_data
+  mongodb_configdb_data:
+    external: true
+    name: mongodb_configdb_data
+
+networks:
+  minha_rede:
+    name: minha_rede
+    external: true

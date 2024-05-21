@@ -1,0 +1,83 @@
+Docker Chatwoot - https://hub.docker.com/r/sendingtk/chatwoot
+
+Docker Evolution - https://hub.docker.com/r/atendai/evolution-api
+
+Docker WoofedCRM - https://hub.docker.com/r/douglara/woofedcrm/tags
+
+Link Zoho Email -  https://www.zoho.com/pt-br/signup.html
+
+Link Favicon: https://www.favicon-generator.org/
+
+
+### Opcional para proximas versões do chatwoot:
+Docker Evolution Nestor - https://hub.docker.com/r/sendingtk/evolution-api/tags
+
+Gerador de Key https://codebeautify.org/generate-random-hexadecimal-numbers
+
+
+
+Instalação Docker
+
+sudo apt-get update ; apt-get install -y apparmor-utils
+
+hostnamectl set-hostname meuservidor1
+
+Altera localhost para
+
+nano /etc/hosts
+
+127.0.0.1 meuservidor1
+
+curl -fsSL https://get.docker.com | bash
+
+docker swarm init
+
+docker network create --driver=overlay minha_rede
+
+nano traefik.yaml
+
+docker stack deploy --prune --resolve-image always -c traefik.yaml traefik
+
+
+Instalação portainer
+
+nano portainer.yaml
+
+docker stack deploy --prune --resolve-image always -c portainer.yaml portainer
+
+Mfcd62!!Mfcd62!!
+
+
+Criar banco de dados postgree
+
+psql -U postgres
+
+create database n8n_queue; create database chatwoot;
+
+
+Entrar no conteiner do WoofedCRM
+
+bundle exec rails db:create db:migrate
+
+##Caso precise:
+
+Apos reiniciar os conteineres do WoofedCRM. Acesse o conteiner do goodjob e execute:
+
+rm /app/tmp/pids/server.pid
+
+
+Criador de Empresa
+
+Tema Criador de Empresa:
+
+Nome Usuario Administrador: Raphael
+Nome da Empresa: AstraOnline
+Email: machineteste24@gmail.com
+Senha: Mfcd62!!
+
+
+
+
+
+
+
