@@ -1,0 +1,1 @@
+multipass -n n8n-lab -c 2 -m 4G -d 20G --network name=n8n-lab,mode=auto
