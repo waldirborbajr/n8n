@@ -2,18 +2,82 @@
   "name": "BBoT-Inactivity",
   "nodes": [
     {
+      "parameters": {},
+      "id": "ca092b38-63bc-447a-af6f-f504ec4b368c",
+      "name": "start-sleep",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        520
+      ]
+    },
+    {
       "parameters": {
-        "amount": 7
+        "operation": "get",
+        "tableId": "workflow",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "sender",
+              "keyValue": "={{ $('start-sleep').item.json.sender }}"
+            }
+          ]
+        }
       },
-      "id": "96745e79-3fa1-4b66-aa7d-2d66285113be",
+      "id": "2a70ca4b-1ae6-443e-a1a5-2911163c8a0d",
+      "name": "search-step",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        20,
+        520
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "5CV2k8yPhUBY6jzs",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "f9d53627-ff69-4fd3-87bb-5b4dd34a27a8",
+      "name": "When clicking \"Test workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        760
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return[\n  {\n    \"step\": \"greeting\",\n    \"sender\": \"554191853938\"\n  }\n]"
+      },
+      "id": "8a7d0d0b-f432-4230-872b-3dded4eeba0d",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -200,
+        760
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "id": "6288cc58-5c80-4866-9b3f-046745731f7b",
       "name": "wait",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -200,
+        -180,
         520
       ],
-      "webhookId": "ba96c820-d07e-479d-9a30-9f6489ec06bb"
+      "webhookId": "dbf18457-04e5-40f4-be3e-808760ee46c4"
     },
     {
       "parameters": {
@@ -27,7 +91,7 @@
             {
               "id": "01180494-a01a-48c3-a8fc-22cf89e0afb6",
               "leftValue": "={{ $json.step }}",
-              "rightValue": "",
+              "rightValue": "={{ $('start-sleep').item.json.step }}",
               "operator": {
                 "type": "string",
                 "operation": "equals",
@@ -39,51 +103,14 @@
         },
         "options": {}
       },
-      "id": "4e612f04-18b2-4319-891d-335d2e3dc8c8",
-      "name": "If",
+      "id": "ec157c0f-6b78-4936-9b52-6bddd4ac3ab5",
+      "name": "validate-step",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        220,
+        240,
         520
       ]
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "tableId": "workflow",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "sender",
-              "condition": "eq",
-              "keyValue": "={{ $('Webhook').item.json.body.sender }}"
-            }
-          ]
-        },
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "step",
-              "fieldValue": "end-timeout"
-            }
-          ]
-        }
-      },
-      "id": "df816d9d-c894-419e-988f-54a1880e6f46",
-      "name": "end-timeout",
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        680,
-        460
-      ],
-      "credentials": {
-        "supabaseApi": {
-          "id": "5CV2k8yPhUBY6jzs",
-          "name": "Supabase account"
-        }
-      }
     },
     {
       "parameters": {
@@ -121,70 +148,113 @@
         },
         "options": {}
       },
-      "id": "42091ad9-fd74-4e02-b394-d1fdc9e911a8",
+      "id": "b6117686-e7c9-4c88-8593-7eb2c6d0ed35",
       "name": "timeout-msg",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
         460,
-        460
-      ]
-    },
-    {
-      "parameters": {},
-      "id": "ca092b38-63bc-447a-af6f-f504ec4b368c",
-      "name": "inactivity-sleep",
-      "type": "n8n-nodes-base.executeWorkflowTrigger",
-      "typeVersion": 1,
-      "position": [
-        -420,
-        520
-      ]
+        400
+      ],
+      "disabled": true
     },
     {
       "parameters": {
-        "operation": "get",
+        "operation": "update",
         "tableId": "workflow",
         "filters": {
           "conditions": [
             {
               "keyName": "sender",
+              "condition": "eq",
               "keyValue": "={{ $('Webhook').item.json.body.sender }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "step",
+              "fieldValue": "end-timeout"
             }
           ]
         }
       },
-      "id": "d4ccc389-8e9c-4930-beb2-4d7603ddf7e8",
-      "name": "search-contact2",
+      "id": "478d2b46-3eea-412c-b3f8-731263c6fddc",
+      "name": "end-timeout",
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        0,
-        520
+        660,
+        400
       ],
-      "alwaysOutputData": true,
       "credentials": {
         "supabaseApi": {
           "id": "5CV2k8yPhUBY6jzs",
           "name": "Supabase account"
         }
-      }
+      },
+      "disabled": true
     }
   ],
   "pinData": {},
   "connections": {
-    "wait": {
+    "start-sleep": {
       "main": [
         [
           {
-            "node": "search-contact2",
+            "node": "wait",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If": {
+    "search-step": {
+      "main": [
+        [
+          {
+            "node": "validate-step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking \"Test workflow\"": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "search-step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wait": {
+      "main": [
+        [
+          {
+            "node": "search-step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validate-step": {
       "main": [
         [
           {
@@ -205,39 +275,26 @@
           }
         ]
       ]
-    },
-    "inactivity-sleep": {
-      "main": [
-        [
-          {
-            "node": "wait",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "search-contact2": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "active": false,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "23031e87-3c54-41ce-a2f4-ef6a59bcf3cd",
+  "versionId": "a4f87353-404a-423a-8cc8-30a10f4a1e66",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f529964ec142b683b8d6fb1b1061b8c872558a9ac9ba4a71dc5384e4d45db503"
   },
   "id": "8uZt6XcVQTm5fbHt",
-  "tags": []
+  "tags": [
+    {
+      "createdAt": "2024-05-22T11:58:30.124Z",
+      "updatedAt": "2024-05-22T11:58:30.124Z",
+      "id": "ii7vVXIayVpEsfgn",
+      "name": "BBoTInactivity"
+    }
+  ]
 }

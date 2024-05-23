@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+  flowise:
+    image: flowiseai/flowise:latest
+    command: flowise start
+    networks:
+     - minha_rede
+    volumes:
+     - flowise_data:/root/.flowise
+    environment:
+     - FLOWISE_USERNAME=admin
+     - FLOWISE_PASSWORD=Mfcd62!!Mfcd62!!
+     - DATABASE_TYPE=postgres
+     - DATABASE_HOST=postgres
+     - DATABASE_PORT=5432
+     - DATABASE_USER=postgres
+     - DATABASE_PASSWORD=Mfcd62!!Mfcd62!!
+     - DATABASE_NAME=flowise
+     - FLOWISE_SECRETKEY_OVERWRITE=vwV94rdf4RdwEdffd0vZp2hf6
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.flowise.rule=Host(`flowise.trecofantastico.com.br`)
+        - traefik.http.routers.flowise.entrypoints=websecure
+        - traefik.http.routers.flowise.tls.certresolver=letsencryptresolver
+        - traefik.http.services.flowise.loadBalancer.server.port=3000
+        - traefik.http.routers.flowise.service=flowise
+
+networks:
+  minha_rede:
+    external: true
+    name: minha_rede
+
+volumes:
+  flowise_data:
+    external: true

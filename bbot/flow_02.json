@@ -1,0 +1,176 @@
+{
+  "name": "flow-02",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1a50a4ab-02ef-435b-9391-90a5003eb920",
+      "name": "trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        440,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6bd81268-e6a9-48f4-86a5-b5f27cdfb6b1",
+              "name": "path",
+              "value": "={{ $json.path }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0e1a7cfc-164e-4973-b7d2-ddac8c915df7",
+      "name": "set-values",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        660,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"path\": \"/dev\",\n    \"key\": \"xpto\",\n    \"pwd\": \"1234\"\n  },\n  {\n    \"jwt\": \"asd#$R%df$%^\"\n  }\n]"
+      },
+      "id": "8766ac36-bbf8-41ed-a4a2-483235d40c90",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "16fa52c9-0a50-4696-abaa-213e5d4e0882",
+              "leftValue": "={{ $json.path }}",
+              "rightValue": "/dev",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "193fd056-0920-4b6a-92b6-a7dc2100e017",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        880,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return []"
+      },
+      "id": "9fdf2539-b583-40b4-90a6-4f04c6a75063",
+      "name": "Code1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return []"
+      },
+      "id": "42333230-f49d-4218-afbd-9baf4625fe35",
+      "name": "Code2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        260
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "trigger": {
+      "main": [
+        [
+          {
+            "node": "set-values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "set-values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-values": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d90c76c8-73e0-4f67-ac7f-0adca0477aa3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f529964ec142b683b8d6fb1b1061b8c872558a9ac9ba4a71dc5384e4d45db503"
+  },
+  "id": "lejk3vdIGyxacZmw",
+  "tags": []
+}

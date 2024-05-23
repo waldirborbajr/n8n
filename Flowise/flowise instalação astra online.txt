@@ -1,0 +1,19 @@
+Para iniciar precisa de:
+
+- portainer
+- typebot
+
+
+Iniciando as instalações: 
+
+- Instalar o Flowise
+- Criar uma conta no Pinecone
+- Gerar Credenciais no Pinecone
+- Gerar Credenciais no Chat GPT
+- Criar um Indexes no Pinecone Dimensions 1536
+
+Criar banco de dados
+
+psql -U postgres
+
+create database flowise3;

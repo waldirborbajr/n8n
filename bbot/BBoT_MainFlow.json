@@ -44,8 +44,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.3,
       "position": [
-        -2220,
-        860
+        -2460,
+        760
       ]
     },
     {
@@ -144,7 +144,7 @@
       "typeVersion": 1,
       "position": [
         -1800,
-        760
+        600
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -191,8 +191,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -2040,
-        860
+        -2280,
+        760
       ]
     },
     {
@@ -225,7 +225,7 @@
       "typeVersion": 2,
       "position": [
         -1580,
-        760
+        600
       ]
     },
     {
@@ -270,7 +270,7 @@
       "typeVersion": 4.2,
       "position": [
         -1360,
-        600
+        480
       ]
     },
     {
@@ -432,7 +432,7 @@
       "typeVersion": 1,
       "position": [
         -1100,
-        520
+        480
       ],
       "credentials": {
         "supabaseApi": {
@@ -955,8 +955,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        -1360,
-        780
+        -1580,
+        1020
       ]
     },
     {
@@ -1006,10 +1006,38 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1,
       "position": [
+        340,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "62d175db-4cf4-4ca2-92aa-336fb1308235",
+              "name": "step",
+              "value": "={{ $json.step }}",
+              "type": "string"
+            },
+            {
+              "id": "2e806f60-59b3-4ed4-ba05-24c944b9e3f9",
+              "name": "sender",
+              "value": "={{ $json.sender }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a3d4a6ff-c593-46d1-ab48-9ab3fdc22258",
+      "name": "save-step",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
         120,
-        540
-      ],
-      "disabled": true
+        660
+      ]
     },
     {
       "parameters": {
@@ -1022,80 +1050,121 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -2400,
-        860
+        -2640,
+        760
       ],
       "webhookId": "ff632b93-b744-41b0-92e7-9fad3c291839"
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
+        "rules": {
+          "values": [
             {
-              "id": "01180494-a01a-48c3-a8fc-22cf89e0afb6",
-              "leftValue": "={{ $('save-step').item.json.step }}",
-              "rightValue": "={{ $json.step }}",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook').item.json.body.type }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "4a2dc2ce-8ff0-4f7d-a490-92109b45ca6a",
+                    "leftValue": "={{ $('Webhook').item.json.body.type }}\n",
+                    "rightValue": "=ptt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ptt"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "2b60e975-d87a-4e18-8a9e-3aa5ece93fcb",
+                    "leftValue": "={{ $('Webhook').item.json.body.type }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "1fcb0eb2-e4bc-4b3b-9f94-6820d83cdedb",
+                    "leftValue": "={{ $('Webhook').item.json.body.type }}",
+                    "rightValue": "document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "document"
             }
-          ],
-          "combinator": "and"
+          ]
         },
         "options": {}
       },
-      "id": "4399a18a-87ae-4fc8-a908-182d90963d4c",
-      "name": "If",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
+      "id": "5347d33b-beec-4989-afac-7da2033a7134",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
       "position": [
-        560,
-        920
+        -2060,
+        700
       ]
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "tableId": "workflow",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "sender",
-              "condition": "eq",
-              "keyValue": "={{ $('Webhook').item.json.body.sender }}"
-            }
-          ]
-        },
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "step",
-              "fieldValue": "end-timeout"
-            }
-          ]
-        }
-      },
-      "id": "9c6aa3e0-1fed-43a5-80a4-f1f931e90163",
-      "name": "end-timeout",
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        980,
-        840
-      ],
-      "credentials": {
-        "supabaseApi": {
-          "id": "5CV2k8yPhUBY6jzs",
-          "name": "Supabase account"
-        }
-      }
     },
     {
       "parameters": {
@@ -1127,85 +1196,19 @@
             },
             {
               "name": "text",
-              "value": "=Olá, parece que você deve estar ocupado no momento.\n\nEstou encerrando nosso atendimento, mas a qualquer momento voce pode voltar a me chamar. Basta digitar *{{ $('parameters').item.json[\"botName\"] }}*.\n\nA *{{ $('parameters').item.json[\"companyName\"] }}* agradece por entrar em contato e te esperamos em uma nova oportunidade.\n"
+              "value": "=Poxa que pena *{{ $('Webhook').item.json.body.name.split(\" \")[0] }}* \n\nNo momento eu ainda não consigo entender esse tipo de mensagem. \n\nMas fique tranquilo, que minha equipe técnica esta trabalhando para me deixar ainda melhor.\n"
             }
           ]
         },
         "options": {}
       },
-      "id": "13be2c86-d49f-4842-bd00-5c8f1d6655fa",
-      "name": "timeout-msg",
+      "id": "9f7cde19-7caa-4c76-9ad7-75f6f98abffa",
+      "name": "greeting1",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        800,
-        840
-      ]
-    },
-    {
-      "parameters": {
-        "amount": 90
-      },
-      "id": "352d993f-6899-4df1-a95c-9ccb53581bee",
-      "name": "Wait",
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        200,
-        920
-      ],
-      "webhookId": "dbf18457-04e5-40f4-be3e-808760ee46c4"
-    },
-    {
-      "parameters": {
-        "operation": "get",
-        "tableId": "workflow",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "sender",
-              "keyValue": "={{ $('Webhook').item.json.body.sender }}"
-            }
-          ]
-        }
-      },
-      "id": "4eeeff69-3e86-4202-b24e-f0f62914eedc",
-      "name": "search-step",
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        380,
-        920
-      ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "supabaseApi": {
-          "id": "5CV2k8yPhUBY6jzs",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "62d175db-4cf4-4ca2-92aa-336fb1308235",
-              "name": "step",
-              "value": "={{ $json.step }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "a3d4a6ff-c593-46d1-ab48-9ab3fdc22258",
-      "name": "save-step",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.3,
-      "position": [
-        0,
-        920
+        -1820,
+        820
       ]
     }
   ],
@@ -1248,7 +1251,7 @@
       "main": [
         [
           {
-            "node": "search-contact",
+            "node": "Switch",
             "type": "main",
             "index": 0
           }
@@ -1495,6 +1498,17 @@
         ]
       ]
     },
+    "save-step": {
+      "main": [
+        [
+          {
+            "node": "goto-inactivity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Webhook": {
       "main": [
         [
@@ -1506,55 +1520,32 @@
         ]
       ]
     },
-    "If": {
+    "Switch": {
       "main": [
         [
           {
-            "node": "timeout-msg",
+            "node": "search-contact",
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "timeout-msg": {
-      "main": [
+        ],
         [
           {
-            "node": "end-timeout",
+            "node": "greeting1",
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "Wait": {
-      "main": [
+        ],
         [
           {
-            "node": "search-step",
+            "node": "greeting1",
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "search-step": {
-      "main": [
+        ],
         [
           {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "save-step": {
-      "main": [
-        [
-          {
-            "node": "Wait",
+            "node": "greeting1",
             "type": "main",
             "index": 0
           }
@@ -1568,11 +1559,18 @@
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "472418bd-9766-4e18-919b-19017b38c12f",
+  "versionId": "cd4e355d-c936-4314-88b0-50de736bf751",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f529964ec142b683b8d6fb1b1061b8c872558a9ac9ba4a71dc5384e4d45db503"
   },
   "id": "gh57hwVXcaoevmbf",
-  "tags": []
+  "tags": [
+    {
+      "createdAt": "2024-05-22T11:58:10.713Z",
+      "updatedAt": "2024-05-22T11:58:10.713Z",
+      "id": "WMmLke0N2clT2LfX",
+      "name": "BBoTMain"
+    }
+  ]
 }
