@@ -1057,6 +1057,51 @@
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sessionKey",
+              "value": "={{ $('parameters').item.json.sessionKey }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "={{ $('parameters').item.json.session }}"
+            },
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json.body.sender }}"
+            },
+            {
+              "name": "text",
+              "value": "=Poxa que pena *{{ $('Webhook').item.json.body.name.split(\" \")[0] }}* \n\nNo momento eu ainda não consigo entender esse tipo de mensagem. \n\nMas fique tranquilo, que minha equipe técnica esta trabalhando para me deixar ainda melhor.\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9f7cde19-7caa-4c76-9ad7-75f6f98abffa",
+      "name": "greeting1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1820,
+        820
+      ]
+    },
+    {
+      "parameters": {
         "rules": {
           "values": [
             {
@@ -1103,7 +1148,7 @@
                 "combinator": "and"
               },
               "renameOutput": true,
-              "outputKey": "ptt"
+              "outputKey": "audio"
             },
             {
               "conditions": {
@@ -1164,51 +1209,6 @@
       "position": [
         -2060,
         700
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $('parameters').item.json.endpoint }}/sendText",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "sessionKey",
-              "value": "={{ $('parameters').item.json.sessionKey }}"
-            },
-            {
-              "name": "content-type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "session",
-              "value": "={{ $('parameters').item.json.session }}"
-            },
-            {
-              "name": "number",
-              "value": "={{ $('Webhook').item.json.body.sender }}"
-            },
-            {
-              "name": "text",
-              "value": "=Poxa que pena *{{ $('Webhook').item.json.body.name.split(\" \")[0] }}* \n\nNo momento eu ainda não consigo entender esse tipo de mensagem. \n\nMas fique tranquilo, que minha equipe técnica esta trabalhando para me deixar ainda melhor.\n"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "9f7cde19-7caa-4c76-9ad7-75f6f98abffa",
-      "name": "greeting1",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -1820,
-        820
       ]
     }
   ],
@@ -1559,7 +1559,7 @@
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "cd4e355d-c936-4314-88b0-50de736bf751",
+  "versionId": "1f52183b-77e1-408e-a78b-921febda64ca",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f529964ec142b683b8d6fb1b1061b8c872558a9ac9ba4a71dc5384e4d45db503"
