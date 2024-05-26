@@ -7,5 +7,5 @@ docker run -it --rm \
   -e TZ="America/Sao_Paulo" \
   -e WEBHOOK_TUNNEL_URL="https://0553-2804-d55-8603-9200-bb8-17e6-d281-254d.ngrok-free.app" \
   -v n8n_data:/home/node/.n8n \
-  docker.n8n.io/n8nio/n8n:1.42.1
-  # start --tunnel
+  docker.n8n.io/n8nio/n8n:1.42.1 \
+  start --tunnel
