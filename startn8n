@@ -1,11 +1,14 @@
 # docker volume create n8n_data
 
+ADDR=$(curl -s -N http://127.0.0.1:4040/api/tunnels | grep -o "[-.0-9a-z]*\.ngrok-free.app")
+echo ${ADDR}
+
 docker run -it --rm \
   --name n8n \
   -p 5678:5678 \
   -e GENERIC_TIMEZONE="America/Sao_Paulo" \
   -e TZ="America/Sao_Paulo" \
-  -e WEBHOOK_TUNNEL_URL="https://0553-2804-d55-8603-9200-bb8-17e6-d281-254d.ngrok-free.app" \
+  -e WEBHOOK_URL="https://${ADDR}" \
   -v n8n_data:/home/node/.n8n \
-  docker.n8n.io/n8nio/n8n:1.42.1 \
-  start --tunnel
+  docker.n8n.io/n8nio/n8n:1.44.1
+  # start --tunnel
