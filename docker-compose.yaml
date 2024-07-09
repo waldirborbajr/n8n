@@ -31,7 +31,7 @@ x-shared: &shared
     - postgres
     - redis
   volumes:
-    - n8n_storage:/home/node/
+    - n8n_storage:/home/node/.n8n
     - /etc/localtime:/etc/localtime
   networks:
     - n8n
@@ -131,8 +131,8 @@ services:
     image: n8nio/n8n:1.47.1
     container_name: n8n-master
     command: ["start", "--tunnel"]
-    # ports:
-    #  - 5678:5678
+    ports:
+      - 5678:5678
 
   n8n-worker:
     <<: *shared
@@ -143,6 +143,12 @@ services:
     depends_on:
       - n8n
 
+# networks:
+#   n8n:
+#     driver: bridge
+
 networks:
   n8n:
-    driver: bridge
+    name: n8n
+  proxy_manager:
+    external: true
