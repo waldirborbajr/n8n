@@ -12,28 +12,18 @@ x-logging: &default-logging
 x-shared: &shared
   restart: always
   environment:
-    # - DB_TYPE=postgresdb
-    # - DB_POSTGRESDB_HOST=postgres
-    # - DB_POSTGRESDB_PORT=5432
-    # - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
-    # - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
-    # - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
-    # - EXECUTIONS_MODE=queue
-    # - QUEUE_BULL_REDIS_HOST=redis
-    # - QUEUE_HEALTH_CHECK_ACTIVE=true
-    # - N8N_BASIC_AUTH_ACTIVE=false
-    # - N8N_PROTOCOL=https
-    # - N8N_ENCRYPTION_KEY=foobarbaz
-    - GENERIC_TIMEZONE=America/Sao_Paulo
-    - TZ=America/Sao_Paulo
-    # - VUE_APP_URL_BASE_API=https://${N8N_HOST}
-    # - WEBHOOK_TUNNEL_URL=https://${N8N_HOST}
     - DB_TYPE=postgresdb
     - DB_POSTGRESDB_HOST=postgres
     - DB_POSTGRESDB_PORT=5432
-    - DB_POSTGRESDB_DATABASE=n8n
-    - DB_POSTGRESDB_USER=n8n
-    - DB_POSTGRESDB_PASSWORD=n8n
+    - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+    - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+    - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+    # - QUEUE_HEALTH_CHECK_ACTIVE=true
+    # - N8N_BASIC_AUTH_ACTIVE=false
+    # - N8N_PROTOCOL=https
+    - GENERIC_TIMEZONE=America/Sao_Paulo
+    - TZ=America/Sao_Paulo
+    # - WEBHOOK_TUNNEL_URL=https://${N8N_HOST}
     - QUEUE_BULL_REDIS_HOST=redis
     - N8N_ENCRYPTION_KEY=4moscS2uGopR7MFG86mL0T47KStIbwfi
     - EXECUTIONS_MODE=queue
@@ -73,11 +63,11 @@ services:
     container_name: n8n-postgresql
     restart: always
     environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-      - POSTGRES_NON_ROOT_USER
-      - POSTGRES_NON_ROOT_PASSWORD
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_NON_ROOT_USER=${POSTGRES_NON_ROOT_USER}
+      - POSTGRES_NON_ROOT_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
     volumes:
       - db_storage:/var/lib/postgresql/data
       - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
