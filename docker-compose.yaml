@@ -1,0 +1,158 @@
+volumes:
+  db_storage:
+  n8n_storage:
+  redis_storage:
+
+x-logging: &default-logging
+  options:
+    max-size: "100m"
+    max-file: "5"
+  driver: json-file
+
+x-shared: &shared
+  restart: always
+  environment:
+    # - DB_TYPE=postgresdb
+    # - DB_POSTGRESDB_HOST=postgres
+    # - DB_POSTGRESDB_PORT=5432
+    # - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+    # - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+    # - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+    # - EXECUTIONS_MODE=queue
+    # - QUEUE_BULL_REDIS_HOST=redis
+    # - QUEUE_HEALTH_CHECK_ACTIVE=true
+    # - N8N_BASIC_AUTH_ACTIVE=false
+    # - N8N_PROTOCOL=https
+    # - N8N_ENCRYPTION_KEY=foobarbaz
+    - GENERIC_TIMEZONE=America/Sao_Paulo
+    - TZ=America/Sao_Paulo
+    # - VUE_APP_URL_BASE_API=https://${N8N_HOST}
+    # - WEBHOOK_TUNNEL_URL=https://${N8N_HOST}
+    - DB_TYPE=postgresdb
+    - DB_POSTGRESDB_HOST=postgres
+    - DB_POSTGRESDB_PORT=5432
+    - DB_POSTGRESDB_DATABASE=n8n
+    - DB_POSTGRESDB_USER=n8n
+    - DB_POSTGRESDB_PASSWORD=n8n
+    - QUEUE_BULL_REDIS_HOST=redis
+    - N8N_ENCRYPTION_KEY=4moscS2uGopR7MFG86mL0T47KStIbwfi
+    - EXECUTIONS_MODE=queue
+  links:
+    - postgres
+    - redis
+  volumes:
+    - n8n_storage:/home/node/
+    - /etc/localtime:/etc/localtime
+  networks:
+    - n8n
+  logging: *default-logging
+  depends_on:
+    redis:
+      condition: service_healthy
+    postgres:
+      condition: service_healthy
+
+services:
+  # https-portal:
+  #   image: steveltn/https-portal:1
+  #   ports:
+  #     - '80:80'
+  #     - '443:443'
+  #   links:
+  #     - n8n
+  #   restart: always
+  #   environment:
+  #     DOMAINS: '${N8N_HOST} -> http://n8n:5678'
+  #     STAGE: ${STAGE:-staging}
+  #     FORCE_RENEW: 'true'
+  #     CUSTOM_NGINX_SERVER_CONFIG_BLOCK: |
+  #         proxy_buffering off;
+
+  postgres:
+    image: postgres:11
+    container_name: n8n-postgresql
+    restart: always
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_NON_ROOT_USER
+      - POSTGRES_NON_ROOT_PASSWORD
+    volumes:
+      - db_storage:/var/lib/postgresql/data
+      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    logging: *default-logging
+    networks:
+      - n8n
+
+  redis:
+    image: redis:6-alpine
+    container_name: n8n-redis
+    restart: always
+    volumes:
+      - redis_storage:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    logging: *default-logging
+    networks:
+      - n8n
+
+  # traefik:
+  #   logging: *default-logging
+  #   image: traefik:v3.0.1
+  #   container_name: traefik
+  #   restart: always
+  #   command:
+  #     - --log.level=ERROR
+  #     - --accesslog=false
+  #     - --api=true
+  #     - --api.insecure=true
+  #     - --entrypoints.web.address=:80
+  #     - --entrypoints.web.http.redirections.entryPoint.to=websecure
+  #     - --entrypoints.web.http.redirections.entryPoint.scheme=https
+  #     - --entrypoints.web.http.redirections.entrypoint.permanent=true
+  #     - --entrypoints.websecure.address=:443
+  #     - --providers.docker=true
+  #     - --providers.docker.exposedbydefault=false
+  #     - --providers.docker.network=n8n_network
+  #     - --api.dashboard=true
+  #     - --certificatesresolvers.myresolver.acme.email=${SSL_EMAIL}"
+  #     - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+  #     - --certificatesresolvers.myresolver.acme.tlschallenge=true
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - traefik_storage:/letsencrypt
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   networks:
+  #     - n8n
+
+  n8n:
+    <<: *shared
+    image: n8nio/n8n:1.47.1
+    container_name: n8n-master
+    command: ["start", "--tunnel"]
+    # ports:
+    #  - 5678:5678
+
+  n8n-worker:
+    <<: *shared
+    image: n8nio/n8n:1.47.1
+    container_name: n8n-worker
+    # command: run /bin/sh -c "sleep 5; n8n worker"
+    command: ["worker"]
+    depends_on:
+      - n8n
+
+networks:
+  n8n:
+    driver: bridge

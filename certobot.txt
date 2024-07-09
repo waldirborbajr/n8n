@@ -1,0 +1,14 @@
+Then, install Certbot as a snap which you will use to obtain the SSL certificate.
+
+$ sudo snap install --classic certbot
+$ sudo certbot certonly --nginx -d <n8n.autoize.net> -m <admin email address> --accept-tos
+
+You will probably want to add the daily  certbot renew job to your system-wide cron tab at /etc/crontab so that the SSL certificate renews itself every 90 when it is close to expiry, to avoid any certificate errors when accessing n8n.
+
+30 1    * * *   root    sudo certbot renew --noninteractive --post-hook "service nginx reload"
+
+After the SSL certificate has been obtained, configure an NGINX server block (virtual host) as follows in /etc/nginx/sites-available. After creating the config file, enable it by creating a sym link from sites-available to sites-enabled.
+
+$ sudo ln -s /etc/sites-available/n8n.conf /etc/sites-enabled/n8n.conf
+$ sudo rm -f /etc/sites-enabled/default
+$ sudo service nginx reload
