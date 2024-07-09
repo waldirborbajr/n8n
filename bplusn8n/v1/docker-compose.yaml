@@ -1,0 +1,89 @@
+version: '3.4'
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4:8.2
+    container_name: n8n_pgadmin
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - "8086:80"
+
+  postgres:
+    image: postgres:14
+    container_name: n8n_postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=${DATABASE_DB}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - './pg_data:/var/lib/postgresql/data'
+    user: '501:20'
+
+  redis:
+    image: redis:7.0.8
+    container_name: n8n_redis
+    ports:
+      - "6379:6379"
+    user: '501:20'
+
+  n8n:
+    container_name: n8n_app
+    build:
+      context: .
+      dockerfile: Dockerfile-n8n
+      args:
+        - N8N_VERSION=0.234.1
+        - DB_TYPE=postgresdb
+        - DB_POSTGRESDB_DATABASE=${DATABASE_DB}
+        - DB_POSTGRESDB_USER=${DATABASE_USER}
+        - DB_POSTGRESDB_HOST=${DATABASE_HOST}
+        - DB_POSTGRESDB_PORT=${DATABASE_PORT}
+        - DB_POSTGRESDB_PASSWORD=${DATABASE_PASSWORD}
+        - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
+        - N8N_PORT=5678
+        - N8N_SMTP_HOST=${N8N_SMTP_HOST}
+        - N8N_SMTP_PORT=${N8N_SMTP_PORT}
+        - N8N_SMTP_USER=${N8N_SMTP_USER}
+        - N8N_SMTP_PASS=${N8N_SMTP_PASS}
+        - N8N_SMTP_SSL=${N8N_SMTP_SSL}
+        - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+        - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_DATA_MAX_AGE}
+        - N8N_LOG_LEVEL=${N8N_LOG_LEVEL}
+        - N8N_LOG_OUTPUT=${N8N_LOG_OUTPUT}
+        - N8N_LOG_FILE_LOCATION=${N8N_LOG_FILE_LOCATION}
+        - N8N_LOG_FILE_MAXSIZE=${N8N_LOG_FILE_MAXSIZE}
+        - N8N_LOG_FILE_MAXCOUNT=${N8N_LOG_FILE_MAXCOUNT}
+        - N8N_DIAGNOSTICS_ENABLED=${N8N_DIAGNOSTICS_ENABLED}
+        - N8N_VERSION_NOTIFICATIONS_ENABLED=${N8N_VERSION_NOTIFICATIONS_ENABLED}
+        - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+        - QUEUE_BULL_REDIS_HOST=${QUEUE_BULL_REDIS_HOST}
+        - QUEUE_BULL_REDIS_PORT=${QUEUE_BULL_REDIS_PORT}
+#        - QUEUE_BULL_REDIS_USERNAME=${QUEUE_BULL_REDIS_USERNAME}
+#        - QUEUE_BULL_REDIS_PASSWORD=${QUEUE_BULL_REDIS_PASSWORD}
+#        - QUEUE_BULL_REDIS_DB=${QUEUE_BULL_REDIS_DB}
+#        - QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD=${QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD}
+#        - QUEUE_RECOVERY_INTERVAL=${QUEUE_RECOVERY_INTERVAL}
+#        - QUEUE_WORKER_TIMEOUT=${QUEUE_WORKER_TIMEOUT}
+    restart: always
+    command: /docker-entrypoint.sh
+    environment:
+      - EXECUTIONS_TIMEOUT=19800
+      - EXECUTIONS_TIMEOUT_MAX=19800
+      - EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS=true
+      - EXECUTIONS_DATA_PRUNE=true
+#      - EXECUTIONS_DATA_PRUNE_MAX_COUNT=5000
+      - EXECUTIONS_MODE=queue
+      - WEBHOOK_URL=http://localhost:5678/
+    ports:
+      - "5678:5678"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -h localhost -U postgres -d ${DATABASE_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      - postgres
+      - redis

@@ -1,0 +1,60 @@
+#!/bin/bash
+
+SESSION_NAME="n8n-dev"
+# ADDR=$(curl -s -N http://127.0.0.1:4040/api/tunnels | grep -o "[-.0-9a-z]*\.ngrok-free.app")
+
+# small start tmux session for small monitor
+small() {
+  # Create a new Tmux session
+  tmux -u new-session -d -s $SESSION_NAME
+
+  # Create windows with specified names and execute commands in each window
+  tmux -u new-window -t $SESSION_NAME:1 -n "ngrok"
+  tmux send-keys -t $SESSION_NAME:1 'ngrok http 5678' C-m
+
+  tmux -u new-window -t $SESSION_NAME:2 -n "redis"
+  tmux send-keys -t $SESSION_NAME:2 'docker run --rm --name n8n-redis --network=n8n -d -p 6379:6379 redis' C-m
+
+  tmux -u new-window -t $SESSION_NAME:3 -n "postgresql"
+  tmux send-keys -t $SESSION_NAME:3 'docker run \
+    --rm \
+    --name n8n-postgres \
+    --network=n8n \
+    -e POSTGRES_PASSWORD=mypasswd \
+    -p 5432:5432 \
+    postgres' C-m
+
+  tmux -u new-window -t $SESSION_NAME:4 -n "n8n"
+  tmux send-keys -t $SESSION_NAME:4 './startn8n' C-m
+
+  # Attach to the newly created session
+  tmux -u attach-session -t $SESSION_NAME:1
+}
+
+# big start tmux session for big monitor
+big() {
+  tmux -u new-session -d -s $SESSION_NAME:1 \; \
+    send-keys 'nvim' C-m \; \
+    split-window -h \; \
+    send-keys 'ngrok http ${BOT_PORT}' C-m \; \
+    split-window -v \; \
+    send-keys 'sleep 5 && source genURL && air' C-m \;
+
+  tmux -u new-window -t $SESSION_NAME:2 -n "Lazygit"
+  tmux send-keys -t $SESSION_NAME:2 'lazygit' C-m
+
+  # Attach to the newly created session
+  tmux -u attach-session -t $SESSION_NAME:1
+}
+
+case $1 in
+  "S" | "s")
+    small
+    ;;
+  "B" | "b")
+    big
+    ;;
+  *)
+    small
+    ;;
+esac

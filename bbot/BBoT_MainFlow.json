@@ -1041,22 +1041,6 @@
     },
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "b-bot",
-        "options": {}
-      },
-      "id": "c293b513-e7e1-46dd-8a3f-48d43bb4c092",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        -2640,
-        760
-      ],
-      "webhookId": "ff632b93-b744-41b0-92e7-9fad3c291839"
-    },
-    {
-      "parameters": {
         "method": "POST",
         "url": "={{ $('parameters').item.json.endpoint }}/sendText",
         "sendHeaders": true,
@@ -1210,6 +1194,22 @@
         -2060,
         700
       ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b-bot",
+        "options": {}
+      },
+      "id": "c293b513-e7e1-46dd-8a3f-48d43bb4c092",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2640,
+        760
+      ],
+      "webhookId": "ff632b93-b744-41b0-92e7-9fad3c291839"
     }
   ],
   "pinData": {},
@@ -1509,17 +1509,6 @@
         ]
       ]
     },
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "parameters",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Switch": {
       "main": [
         [
@@ -1551,6 +1540,17 @@
           }
         ]
       ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1559,7 +1559,7 @@
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "1f52183b-77e1-408e-a78b-921febda64ca",
+  "versionId": "bd97ac9e-cb85-4268-babc-2cf498fed22d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f529964ec142b683b8d6fb1b1061b8c872558a9ac9ba4a71dc5384e4d45db503"

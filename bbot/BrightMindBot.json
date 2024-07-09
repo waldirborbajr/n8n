@@ -1,0 +1,77 @@
+{
+  "name": "BrightMindBot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "inline_query",
+          "*",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "id": "ad950245-dd8f-4646-b721-46154114e16a",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        340
+      ],
+      "webhookId": "78148a05-7c3f-4d52-a684-2a55f00a8315",
+      "credentials": {
+        "telegramApi": {
+          "id": "uPPLfRrNhkMrmcDD",
+          "name": "Telegram BrightMindBot"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 188574668,
+          "message": {
+            "message_id": 37,
+            "from": {
+              "id": 782816475,
+              "is_bot": false,
+              "first_name": "Waldir Borba Junior🇧🇷🛫🌎",
+              "username": "waldirborbajr",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 782816475,
+              "first_name": "Waldir Borba Junior🇧🇷🛫🌎",
+              "username": "waldirborbajr",
+              "type": "private"
+            },
+            "date": 1717510892,
+            "text": "/start",
+            "entities": [
+              {
+                "offset": 0,
+                "length": 6,
+                "type": "bot_command"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "connections": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9b3b7378-6391-4841-8eb0-32990db0cc84",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f529964ec142b683b8d6fb1b1061b8c872558a9ac9ba4a71dc5384e4d45db503"
+  },
+  "id": "NEC08tK6VgZgZTLJ",
+  "tags": []
+}
