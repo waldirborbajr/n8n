@@ -22,14 +22,14 @@ x-shared: &shared
     - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
     - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
     - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
-    # - QUEUE_HEALTH_CHECK_ACTIVE=true
+    - QUEUE_HEALTH_CHECK_ACTIVE=true
     # - N8N_BASIC_AUTH_ACTIVE=false
     # - N8N_PROTOCOL=https
     - GENERIC_TIMEZONE=${TIMEZONE}
     - TZ=${TIMEZONE}
     - WEBHOOK_URL=https://${N8N_HOST}
     - QUEUE_BULL_REDIS_HOST=redis
-    - N8N_ENCRYPTION_KEY=4moscS2uGopR7MFG86mL0T47KStIbwfi
+    - N8N_ENCRYPTION_KEY=%{N8N_ENCRYPTION_KEY}
     - EXECUTIONS_MODE=queue
     - N8N_QUEUE_TYPE=redis
     - N8N_QUEUE_HOST=redis
@@ -140,7 +140,7 @@ services:
     #   - traefik.http.routers.n8n.middlewares=n8n@docker
     #   - traefik.enable=true
     # command: ["start", "--tunnel"]
-    command: ["start"]
+    # command: ["start"]
     ports:
       - 5678:5678
 
@@ -148,7 +148,7 @@ services:
     <<: *shared
     image: ${N8N_IMAGE}
     container_name: n8n-worker
-    command: ["worker"]
+    command: worker
     depends_on:
       - n8n
 
