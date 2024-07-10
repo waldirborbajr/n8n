@@ -51,6 +51,22 @@ x-shared: &shared
       condition: service_healthy
 
 services:
+  # https-portal:
+  #   image: steveltn/https-portal:1
+  #   container_name: n8n-https-portal
+  #   ports:
+  #     - '80:80'
+  #     - '443:443'
+  #   links:
+  #     - n8n
+  #   restart: unless-stopped
+  #   environment:
+  #     DOMAINS: '${N8N_HOST} -> http://n8n:5678'
+  #     STAGE: ${STAGE:-staging}
+  #     FORCE_RENEW: 'true'
+  #     CUSTOM_NGINX_SERVER_CONFIG_BLOCK: |
+  #         proxy_buffering off;
+
   postgres:
     image: ${POSTGRES_IMAGE}
     container_name: n8n-postgresql
