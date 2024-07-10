@@ -118,6 +118,9 @@ services:
   n8n:
     <<: *shared
     image: ${N8N_IMAGE}
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: n8n-master
     # labels:
     #   - traefik.enable=true
