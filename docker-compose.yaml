@@ -1,6 +1,10 @@
 volumes:
   db_storage:
+    external: true
   n8n_storage:
+    external: true
+  traefik_storage:
+    external: true
   redis_storage:
 
 x-logging: &default-logging
@@ -10,7 +14,7 @@ x-logging: &default-logging
   driver: json-file
 
 x-shared: &shared
-  restart: always
+  restart: unless-stopped
   environment:
     - DB_TYPE=postgresdb
     - DB_POSTGRESDB_HOST=postgres
@@ -21,18 +25,22 @@ x-shared: &shared
     # - QUEUE_HEALTH_CHECK_ACTIVE=true
     # - N8N_BASIC_AUTH_ACTIVE=false
     # - N8N_PROTOCOL=https
-    - GENERIC_TIMEZONE=America/Sao_Paulo
-    - TZ=America/Sao_Paulo
-    - WEBHOOK_TUNNEL_URL=https://${N8N_HOST}
+    - GENERIC_TIMEZONE=${TIMEZONE}
+    - TZ=${TIMEZONE}
+    - WEBHOOK_URL=https://${N8N_HOST}
     - QUEUE_BULL_REDIS_HOST=redis
     - N8N_ENCRYPTION_KEY=4moscS2uGopR7MFG86mL0T47KStIbwfi
     - EXECUTIONS_MODE=queue
+    - N8N_QUEUE_TYPE=redis
+    - N8N_QUEUE_HOST=redis
+    - N8N_QUEUE_PORT=6379
+    - N8N_QUEUE_NAME=n8n
   links:
     - postgres
     - redis
+    # - traefik
   volumes:
     - n8n_storage:/home/node/.n8n
-    - /etc/localtime:/etc/localtime
   networks:
     - n8n
   logging: *default-logging
@@ -43,25 +51,10 @@ x-shared: &shared
       condition: service_healthy
 
 services:
-  # https-portal:
-  #   image: steveltn/https-portal:1
-  #   ports:
-  #     - '80:80'
-  #     - '443:443'
-  #   links:
-  #     - n8n
-  #   restart: always
-  #   environment:
-  #     DOMAINS: '${N8N_HOST} -> http://n8n:5678'
-  #     STAGE: ${STAGE:-staging}
-  #     FORCE_RENEW: 'true'
-  #     CUSTOM_NGINX_SERVER_CONFIG_BLOCK: |
-  #         proxy_buffering off;
-
   postgres:
-    image: postgres:11
+    image: ${POSTGRES_IMAGE}
     container_name: n8n-postgresql
-    restart: always
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -69,7 +62,7 @@ services:
       - POSTGRES_NON_ROOT_USER=${POSTGRES_NON_ROOT_USER}
       - POSTGRES_NON_ROOT_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
     volumes:
-      - db_storage:/var/lib/postgresql/data
+      - db_storage:/var/lib/postgresql/data:rw
       - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
@@ -81,9 +74,9 @@ services:
       - n8n
 
   redis:
-    image: redis:6-alpine
+    image: ${REDIS_IMAGE}
     container_name: n8n-redis
-    restart: always
+    restart: unless-stopped
     volumes:
       - redis_storage:/data
     healthcheck:
@@ -95,41 +88,55 @@ services:
     networks:
       - n8n
 
-  # traefik:
-  #   logging: *default-logging
-  #   image: traefik:v3.0.1
-  #   container_name: traefik
-  #   restart: always
-  #   command:
-  #     - --log.level=ERROR
-  #     - --accesslog=false
-  #     - --api=true
-  #     - --api.insecure=true
-  #     - --entrypoints.web.address=:80
-  #     - --entrypoints.web.http.redirections.entryPoint.to=websecure
-  #     - --entrypoints.web.http.redirections.entryPoint.scheme=https
-  #     - --entrypoints.web.http.redirections.entrypoint.permanent=true
-  #     - --entrypoints.websecure.address=:443
-  #     - --providers.docker=true
-  #     - --providers.docker.exposedbydefault=false
-  #     - --providers.docker.network=n8n_network
-  #     - --api.dashboard=true
-  #     - --certificatesresolvers.myresolver.acme.email=${SSL_EMAIL}"
-  #     - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
-  #     - --certificatesresolvers.myresolver.acme.tlschallenge=true
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - traefik_storage:/letsencrypt
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #   networks:
-  #     - n8n
+  traefik:
+    logging: *default-logging
+    image: ${TRAEFIK_IMAGE}
+    container_name: n8n-traefik
+    restart: unless-stopped
+    command:
+      - --log.level=ERROR
+      - --api=true
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true
+      - --certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}
+      - --certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - traefik_storage:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - n8n
 
   n8n:
     <<: *shared
-    image: n8nio/n8n:1.47.3
+    image: ${N8N_IMAGE}
     container_name: n8n-master
+    labels:
+
+      - traefik.enable=true
+      # - traefik.http.routers.n8n.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.n8n.rule=Host(`${N8N_HOST}`)
+      - traefik.http.routers.n8n.tls=true
+      - traefik.http.routers.n8n.entrypoints=web,websecure
+      - traefik.http.routers.n8n.tls.certresolver=mytlschallenge
+      - traefik.http.middlewares.n8n.headers.SSLRedirect=true
+      - traefik.http.middlewares.n8n.headers.STSSeconds=315360000
+      - traefik.http.middlewares.n8n.headers.browserXSSFilter=true
+      - traefik.http.middlewares.n8n.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.n8n.headers.forceSTSHeader=true
+      - traefik.http.middlewares.n8n.headers.SSLHost=${DOMAIN_NAME}
+      - traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true
+      - traefik.http.middlewares.n8n.headers.STSPreload=true
+      - traefik.http.routers.n8n.middlewares=n8n@docker
+      - traefik.enable=true
     # command: ["start", "--tunnel"]
     command: ["start"]
     ports:
@@ -137,7 +144,7 @@ services:
 
   n8n-worker:
     <<: *shared
-    image: n8nio/n8n:1.47.3
+    image: ${N8N_IMAGE}
     container_name: n8n-worker
     command: ["worker"]
     depends_on:

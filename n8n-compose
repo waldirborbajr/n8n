@@ -1,3 +1,9 @@
+docker volume create n8n_storage
+docker volume create db_storage
+docker volume create traefik_storage
+
+
+
 ADDR=$(curl -s -N http://127.0.0.1:4040/api/tunnels | grep -o "[-.0-9a-z]*\.ngrok-free.app")
 
 # Check if ADDR was found
