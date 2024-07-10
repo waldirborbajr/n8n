@@ -14,4 +14,4 @@ fi
 
 sed -i "s/^N8N_HOST=.*/N8N_HOST=$ADDR/" .env
 
-docker compose up
+docker compose up --remove-orphans
