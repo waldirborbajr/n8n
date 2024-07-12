@@ -1,0 +1,85 @@
+version: "3.7"
+
+services:
+  evolution_astra:
+    image: davidsongomes/evolution-api:v1.5.4
+    command: ["node", "./dist/src/main.js"]
+    networks:
+      - minha_rede
+    volumes:
+    - evolution_astra_instances:/evolution/instances
+    - evolution_astra_store:/evolution/store
+    environment:
+      - SERVER_URL=https://seudominio.com.br
+      - DOCKER_ENV=true
+      - LOG_LEVEL=ERROR,WARN,DEBUG,INFO,LOG,VERBOSE,DARK,WEBHOOKS
+      - DEL_INSTANCE=false
+      - CONFIG_SESSION_PHONE_CLIENT=Evolution
+      - CONFIG_SESSION_PHONE_NAME=Chrome
+      - STORE_MESSAGES=true
+      - STORE_MESSAGE_UP=true
+      - STORE_CONTACTS=true
+      - STORE_CHATS=true
+      - CLEAN_STORE_CLEANING_INTERVAL=7200 # seconds === 2h
+      - CLEAN_STORE_MESSAGES=true
+      - CLEAN_STORE_MESSAGE_UP=true
+      - CLEAN_STORE_CONTACTS=true
+      - CLEAN_STORE_CHATS=true
+      - AUTHENTICATION_TYPE=apikey
+      - AUTHENTICATION_API_KEY=0417bf43b0a8969bd6685bcb49d783df
+      - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+      - QRCODE_LIMIT=30
+      - WEBHOOK_GLOBAL_ENABLED=false
+      - WEBHOOK_GLOBAL_URL=https://URL
+      - WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS=false
+      - WEBHOOK_EVENTS_APPLICATION_STARTUP=false
+      - WEBHOOK_EVENTS_QRCODE_UPDATED=true
+      - WEBHOOK_EVENTS_MESSAGES_SET=false
+      - WEBHOOK_EVENTS_MESSAGES_UPSERT=true
+      - WEBHOOK_EVENTS_MESSAGES_UPDATE=true
+      - WEBHOOK_EVENTS_CONTACTS_SET=true
+      - WEBHOOK_EVENTS_CONTACTS_UPSERT=true
+      - WEBHOOK_EVENTS_CONTACTS_UPDATE=true
+      - WEBHOOK_EVENTS_PRESENCE_UPDATE=true
+      - WEBHOOK_EVENTS_CHATS_SET=true
+      - WEBHOOK_EVENTS_CHATS_UPSERT=true
+      - WEBHOOK_EVENTS_CHATS_UPDATE=true
+      - WEBHOOK_EVENTS_CHATS_DELETE=true
+      - WEBHOOK_EVENTS_GROUPS_UPSERT=true
+      - WEBHOOK_EVENTS_GROUPS_UPDATE=true
+      - WEBHOOK_EVENTS_GROUP_PARTICIPANTS_UPDATE=true
+      - WEBHOOK_EVENTS_CONNECTION_UPDATE=true
+      - REDIS_ENABLED=false
+      - REDIS_URI=redis://redis:6379
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2048M
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.evolution_astra.rule=Host(`seudominio.com.br`)
+        - traefik.http.routers.evolution_astra.entrypoints=websecure
+        - traefik.http.routers.evolution_astra.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.evolution_astra.priority=1
+        - traefik.http.routers.evolution_astra.service=evolution_astra
+        - traefik.http.services.evolution_astra.loadbalancer.server.port=8080
+        - traefik.http.services.evolution_astra.loadbalancer.passHostHeader=true
+
+volumes:
+  evolution_astra_instances:
+    external: true
+    name: evolution_astra_instances
+  evolution_astra_store:
+    external: true
+    name: evolution_astra_store
+
+networks:
+  minha_rede:
+    name: minha_rede
+    external: true

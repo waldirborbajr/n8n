@@ -1,0 +1,492 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "criadorchatwoot",
+        "options": {}
+      },
+      "id": "12dd89e9-9b9c-42ae-9c93-a0c95be7a5b3",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1540,
+        480
+      ],
+      "webhookId": "6fe428e3-1752-453c-9358-abf18b793387"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Info Base').item.json[\"UrlChatwoot\"] }}/platform/api/v1/accounts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Info Base').item.json[\"api_access_token\"] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.NomeEmpresa }}"
+            },
+            {
+              "name": "locale",
+              "value": "pt_BR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "138b677a-0844-4c99-beef-ce5bf07098ed",
+      "name": "Cria Conta",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -940,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Info Base').item.json[\"UrlChatwoot\"] }}/platform/api/v1/users",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Info Base').item.json[\"api_access_token\"] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $('Info Base').item.json.nomeAdministrador }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $('Info Base').item.json[\"email\"] }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('Info Base').item.json[\"password\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eb59b68f-29e3-4694-8453-fd6935401bd6",
+      "name": "Cria Usuario",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -740,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Info Base').item.json[\"UrlChatwoot\"] }}/platform/api/v1/accounts/{{ $node[\"Cria Conta\"].json[\"id\"] }}/account_users",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Info Base').item.json[\"api_access_token\"] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "={{ $node[\"Cria Usuario\"].json[\"id\"] }}"
+            },
+            {
+              "name": "role",
+              "value": "administrator"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ade94938-c38f-4d69-8d5f-255550d8bd9b",
+      "name": "Add Usuario a Conta",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -540,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "seu email de envio",
+        "toEmail": "={{ $('LimpaDados').item.json.email }}",
+        "subject": "Bem vindo ao Sua Empresa",
+        "text": "=Olá seja bem vindo:\n\nAbaixo segue seus dados de acesso iniciais:\n\nURL: {{ $('Info Base').item.json[\"UrlChatwoot\"] }}\n\nLoging: {{ $('LimpaDados').item.json[\"email\"] }}\n\nSenha: {{ $('LimpaDados').item.json[\"senha\"] }}",
+        "options": {}
+      },
+      "id": "f7b48305-d042-49e8-bba6-8e173ab9ee6e",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        440,
+        480
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "hZblJBN5HtAn74IV",
+          "name": "SMTP account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "UrlChatwoot",
+              "value": "sua url do chatwoot"
+            },
+            {
+              "name": "api_access_token",
+              "value": "sua key de app chatwoot"
+            },
+            {
+              "name": "UrlEvolution",
+              "value": "sua url evolution"
+            },
+            {
+              "name": "apievolution",
+              "value": "sua key da evolution"
+            },
+            {
+              "name": "nome",
+              "value": "={{ $json.NomeEmpresa }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $json.senha }}"
+            },
+            {
+              "name": "NomeEmpresa",
+              "value": "={{ $json.NomeEmpresa }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "88e91a10-3ef0-4b1d-914c-42fd329f9fe6",
+      "name": "Info Base",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -1140,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "nomeAdministrador",
+              "value": "={{$node[\"Webhook\"].json[\"body\"][\"messages\"][0][\"content\"].match(/Nome Usuario Administrador: ([^\\s]+)/)[1];}}"
+            },
+            {
+              "name": "NomeEmpresa",
+              "value": "={{$node[\"Webhook\"].json[\"body\"][\"messages\"][0][\"content\"].match(/Nome da Empresa: ([^\\s]+)/)[1];}}"
+            },
+            {
+              "name": "email",
+              "value": "={{$node[\"Webhook\"].json[\"body\"][\"messages\"][0][\"content\"].match(/Email: ([^\\s]+)/)[1];}}"
+            },
+            {
+              "name": "senha",
+              "value": "={{$node[\"Webhook\"].json[\"body\"][\"messages\"][0][\"content\"].match(/Senha: ([^\\s]+)/)[1];}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ae2092ce-4cbd-4fca-bf35-5fea3f62ec51",
+      "name": "LimpaDados",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -1340,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Info Base').item.json.UrlEvolution }}/instance/create",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Info Base').item.json[\"apievolution\"] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"instanceName\": \"{{ $json.id }}whatsapp\",\n    \"token\": \"\",\n    \"qrcode\": true,\n    \"chatwoot_account_id\": {{ $('Cria Conta').item.json[\"id\"] }},\n    \"chatwoot_token\": \"{{ $('Cria Usuario').item.json[\"access_token\"] }}\",\n    \"chatwoot_url\": \"{{ $('Info Base').item.json[\"UrlChatwoot\"] }}\",\n    \"chatwoot_sign_msg\": true,\n    \"chatwoot_reopen_conversation\": true,\n    \"chatwoot_conversation_pending\": false\n} ",
+        "options": {}
+      },
+      "id": "daf57fd6-af4a-45e2-895e-ffc8b5f27e6f",
+      "name": "Cria API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -340,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Crie o SMTP do Google \n**Acesse o link abaixo e descubra como:\n\nhttps://deciduous-punishment-53d.notion.site/Como-adicionar-SMTP-do-Gmail-no-Chatwoot-7442fd338ddd465d9c77ca1379984e89",
+        "height": 376.55813953488394,
+        "width": 358.43023255813966
+      },
+      "id": "e3be487d-ee63-4a05-8e15-732926db6178",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        400,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $('Info Base').item.json[\"UrlChatwoot\"] }}/api/v1/accounts/{{ $node[\"Cria Conta\"].json[\"id\"] }}/contacts/{{ $('Busca Contato Gerador de QR').item.json[\"payload\"][0][\"id\"] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Cria Usuario').item.json[\"access_token\"] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "=Gerador de QR"
+            },
+            {
+              "name": "avatar_url",
+              "value": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Link_pra_pagina_principal_da_Wikipedia-PT_em_codigo_QR_b.svg/1200px-Link_pra_pagina_principal_da_Wikipedia-PT_em_codigo_QR_b.svg.png"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "24d0f428-5604-426c-be9f-7fc13b280d56",
+      "name": "Alterar nome contato Gerador de QR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        240,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Info Base').item.json[\"UrlChatwoot\"] }}/api/v1/accounts/{{ $node[\"Cria Conta\"].json[\"id\"] }}/contacts/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "+123456"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Cria Usuario').item.json[\"access_token\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b8c2303e-e999-49c6-a5ca-61808deca11e",
+      "name": "Busca Contato Gerador de QR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        20,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "seconds"
+      },
+      "id": "ac90f548-5e70-40ad-8ebc-0fc280c67f65",
+      "name": "5s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        480
+      ],
+      "webhookId": "a3b7a964-c13a-4b08-8a0d-bea313f43fac"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "LimpaDados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria Conta": {
+      "main": [
+        [
+          {
+            "node": "Cria Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria Usuario": {
+      "main": [
+        [
+          {
+            "node": "Add Usuario a Conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Usuario a Conta": {
+      "main": [
+        [
+          {
+            "node": "Cria API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info Base": {
+      "main": [
+        [
+          {
+            "node": "Cria Conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LimpaDados": {
+      "main": [
+        [
+          {
+            "node": "Info Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria API": {
+      "main": [
+        [
+          {
+            "node": "5s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alterar nome contato Gerador de QR": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Contato Gerador de QR": {
+      "main": [
+        [
+          {
+            "node": "Alterar nome contato Gerador de QR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5s": {
+      "main": [
+        [
+          {
+            "node": "Busca Contato Gerador de QR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4df4e543-d739-4a44-b6bb-7a5dc3668f9b",
+  "id": "XlhT9zkR7TY1Uark",
+  "meta": {
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "tags": []
+}
