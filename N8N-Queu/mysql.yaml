@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    command:
+      [
+        --character-set-server=utf8mb4,
+        --collation-server=utf8mb4_general_ci,
+        --sql-mode=,
+        --default-authentication-plugin=mysql_native_password,
+        --max-allowed-packet=512MB,
+        --port=3306,
+      ]
+    #Você pode retirar a porta, para não deixar exposto!
+    ports:
+      - 3306:3306
+    networks:
+      - app_network
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: <SUA_SENHA_AQUI>
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    networks:
+      - app_network
+      - traefik_public
+    environment:
+      PMA_HOSTS: mysql
+      PMA_ARBITRARY: 0
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.phpmyadmin.rule=Host(`pma.SEU_DOMINIO.com.br`)
+        - traefik.http.routers.phpmyadmin.tls=true
+        - traefik.http.routers.phpmyadmin.tls.certresolver=le
+        - traefik.http.routers.phpmyadmin.service=phpmyadmin
+        - traefik.http.services.phpmyadmin.loadbalancer.server.port=80
+
+volumes:
+  mysql_data:
+    external: true
+
+networks:
+  app_network:
+    external: true
+  traefik_public:
+    external: true

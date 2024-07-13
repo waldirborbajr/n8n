@@ -1,34 +1,29 @@
-version: "3.7"
+version: "3.8"
 
+# mais info: https://youtu.be/tQ6-A1wl-C0
 services:
   redis:
-    image: redis:latest
-    command: [
-        "redis-server",
-        "--appendonly",
-        "yes",
-        "--port",
-        "6379"
-      ]
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes", "--port", "6379"]
+    networks:
+      - app_network
     volumes:
       - redis_data:/data
-    networks:
-      - minha_rede
     deploy:
-      placement:
-        constraints:
-          - node.role == manager
+      mode: replicated
+      replicas: 1
       resources:
         limits:
           cpus: "0.5"
-          memory: 1024M
+          memory: 512M
+      placement:
+        constraints:
+          - node.role == manager
 
 volumes:
   redis_data:
     external: true
-    name: redis_data
 
 networks:
-  minha_rede:
+  app_network:
     external: true
-    name: minha_rede

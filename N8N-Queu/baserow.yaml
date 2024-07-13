@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  baserow:
+    image: baserow/baserow:latest
+    networks:
+      - traefik_public
+      - app_network
+    volumes:
+      - baserow_data:/baserow/data
+    environment:
+      BASEROW_PUBLIC_URL: https://baserow.SEU_DOMINIO.com.br
+      DATABASE_HOST: postgres
+      DATABASE_NAME: baserow
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: SUA_SENHA
+      BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION: "false"
+      BASEROW_ROW_PAGE_SIZE_LIMIT: 200
+      BATCH_ROWS_SIZE_LIMIT: 200
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1024M
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.baserow.rule=Host(`baserow.SEU_DOMINIO.com.br`)
+        - traefik.http.routers.baserow.entrypoints=websecure
+        - traefik.http.routers.baserow.tls.certresolver=le
+        - traefik.http.routers.baserow.service=baserow
+        - traefik.http.services.baserow.loadbalancer.server.port=80
+
+volumes:
+  baserow_data:
+    external: true
+
+networks:
+  traefik_public:
+    external: true
+  app_network:
+    external: true
