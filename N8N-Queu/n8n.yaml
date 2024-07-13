@@ -1,11 +1,11 @@
-version: "3.7"
+version: "3.8"
 
 services:
   n8n_editor:
     image: n8nio/n8n:latest
     command: start
     networks:
-      - minha_rede
+      - app_network
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_DATABASE=n8n_queue
@@ -38,22 +38,22 @@ services:
         limits:
           cpus: "0.5"
           memory: 1024M
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.n8n_editor.rule=Host(`n8n.seudominio.com.br`)
-        - traefik.http.routers.n8n_editor.entrypoints=websecure
-        - traefik.http.routers.n8n_editor.priority=1
-        - traefik.http.routers.n8n_editor.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.n8n_editor.tls=true
-        - traefik.http.routers.n8n_editor.service=n8n_editor
-        - traefik.http.services.n8n_editor.loadbalancer.server.port=5678
-        - traefik.http.services.n8n_editor.loadbalancer.passHostHeader=1
+      # labels:
+      #   - traefik.enable=true
+      #   - traefik.http.routers.n8n_editor.rule=Host(`n8n.seudominio.com.br`)
+      #   - traefik.http.routers.n8n_editor.entrypoints=websecure
+      #   - traefik.http.routers.n8n_editor.priority=1
+      #   - traefik.http.routers.n8n_editor.tls.certresolver=letsencryptresolver
+      #   - traefik.http.routers.n8n_editor.tls=true
+      #   - traefik.http.routers.n8n_editor.service=n8n_editor
+      #   - traefik.http.services.n8n_editor.loadbalancer.server.port=5678
+      #   - traefik.http.services.n8n_editor.loadbalancer.passHostHeader=1
 
   n8n_webhook:
     image: n8nio/n8n:latest
     command: webhook
     networks:
-      - minha_rede
+      - app_network
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_DATABASE=n8n_queue
@@ -86,22 +86,22 @@ services:
         limits:
           cpus: "0.5"
           memory: 1024M
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.n8n_webhook.rule=(Host(`webhook.seudominio`))
-        - traefik.http.routers.n8n_webhook.entrypoints=websecure
-        - traefik.http.routers.n8n_webhook.priority=1
-        - traefik.http.routers.n8n_webhook.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.n8n_editor.tls=true
-        - traefik.http.routers.n8n_webhook.service=n8n_webhook
-        - traefik.http.services.n8n_webhook.loadbalancer.server.port=5678
-        - traefik.http.services.n8n_webhook.loadbalancer.passHostHeader=1
+      # labels:
+      #   - traefik.enable=true
+      #   - traefik.http.routers.n8n_webhook.rule=(Host(`webhook.seudominio`))
+      #   - traefik.http.routers.n8n_webhook.entrypoints=websecure
+      #   - traefik.http.routers.n8n_webhook.priority=1
+      #   - traefik.http.routers.n8n_webhook.tls.certresolver=letsencryptresolver
+      #   - traefik.http.routers.n8n_editor.tls=true
+      #   - traefik.http.routers.n8n_webhook.service=n8n_webhook
+      #   - traefik.http.services.n8n_webhook.loadbalancer.server.port=5678
+      #   - traefik.http.services.n8n_webhook.loadbalancer.passHostHeader=1
 
   n8n_worker:
     image: n8nio/n8n:latest
     command: worker --concurrency=7
     networks:
-      - minha_rede
+      - app_network
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_DATABASE=n8n_queue
@@ -136,7 +136,6 @@ services:
           memory: 1024M
 
 networks:
-  minha_rede:
-    name: minha_rede
+  app_network:
     external: true
 

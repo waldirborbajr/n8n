@@ -43,7 +43,6 @@ networks:
     external: true
     attachable: true
   agent_network:
-    driver: overlay
     attachable: true
     external: true
 
