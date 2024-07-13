@@ -1,3 +1,5 @@
+Source: https://www.youtube.com/watch?v=F3iVIHKFmxk
+
 Docker Chatwoot - https://hub.docker.com/r/chatwoot/chatwoot/tags
 
 Docker Evolution - https://hub.docker.com/r/davidsongomes/evolution-api/tags
@@ -68,9 +70,3 @@ Senha: Mfcd62!!
 Painel Evolution Alternativo:
 
 https://app.appsmith.com/app/astraonline/home-6523f0e91a47f44c7b93f1d8
-
-
-
-
-
-
