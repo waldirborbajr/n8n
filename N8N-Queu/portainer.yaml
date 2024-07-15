@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   agent:
     image: portainer/agent:2.19.5
@@ -15,9 +17,9 @@ services:
     image: portainer/portainer-ce:2.19.5
     command: -H tcp://tasks.agent:9001 --tlsskipverify
     ports:
-      - "9443:9443"
+#      - "9443:9443"
       - "9000:9000"
-      - "8000:8000"
+#      - "8000:8000"
     volumes:
       - portainer_data:/data
     networks:
@@ -43,9 +45,9 @@ networks:
     external: true
     attachable: true
   agent_network:
-    attachable: true
     external: true
 
 volumes:
   portainer_data:
     external: true
+
