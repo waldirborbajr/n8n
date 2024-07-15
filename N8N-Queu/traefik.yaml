@@ -14,16 +14,17 @@ services:
       - --providers.docker.network=traefik_public
       - --providers.docker.endpoint=unix:///var/run/docker.sock
       # Config para SSL Lets Encrypt
+      - --certificatesresolvers.le.acme.httpchallenge=true
+      #- --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
       # altere para seu e-mail
-      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
       - --certificatesresolvers.le.acme.email=wborbajr@gmail.com
       - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
       - --certificatesresolvers.le.acme.tlschallenge=true
       # Global HTTP -> HTTPS
-      - --entrypoints.web.http.redirections.entryPoint.to=websecure
-      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      #- --entrypoints.web.http.redirections.entryPoint.to=websecure
+      #- --entrypoints.web.http.redirections.entryPoint.scheme=https
       #- --api
-      #- --log.level=DEBUG
+      - --log.level=DEBUG
     ports:
       - "80:80"
       #- "8080:8080" # porta do painel do traefik, caso queira ver todas as rotas.
@@ -47,5 +48,3 @@ volumes:
 networks:
   traefik_public:
     external: true
-    
-
