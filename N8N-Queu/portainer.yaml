@@ -32,7 +32,7 @@ services:
         constraints: [ node.role == manager ]
       #labels:
         #- "traefik.enable=true"
-        #- "traefik.docker.network=traefik_public"
+        ##- "traefik.docker.network=traefik_public"
         #- "traefik.http.routers.portainer.rule=Host(`portainer.SEU_DOMINIO.com`)"
         #- "traefik.http.routers.portainer.entrypoints=websecure"
         #- "traefik.http.routers.portainer.priority=1"
