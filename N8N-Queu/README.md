@@ -1,9 +1,22 @@
+
+## Download Manifest
+
+curl -L https://downloads.portainer.io/ee2-20/portainer-agent-stack.yml -o portainer-agent-stack.yml
+
+docker stack deploy -c portainer-agent-stack.yml portainer
+
+## Swarm
+
 docker swarm init --advertise-addr IP_DO_MASTER
 docker promote nodeX # promover para VICE_MASTER
 
 docker swarm join --token SWMTKN-1-4vmgzh2e0eji0d255p6j203p4hgyo5tygi0gc0k60ngpf4bica-1vz2vfr880kx7wgyg9yukh1hd 10.224.145.221:2377
 
+## Deploy Stack
+
 docker stack deploy -c portainer.yaml portainer
+
+## Network create
 
 docker network create --driver=overlay agent_network
 docker network create --driver=overlay traefik_public
@@ -21,6 +34,13 @@ docker run -d -p 8000:8000 -p 9443:9443 -p 9000:9000 --name=portainer --restart=
 
 ## Swarm
 
-docker pull portainer/portainer-ce:2.20.3
+docker service ls
 
-docker service update --image portainer/portainer-ce:2.20.3 --publish-add 9443:9443 --force portainer_portainer
+docker pull portainer/portainer-ce:2.20.3
+docker service update --image portainer/portainer-ce:2.20.3 --publish-add 9000:9000 --force portainer_portainer
+
+docker pull portainer/agent:2.20.3
+docker service update --image portainer/agent:2.20.3 --force portainer_agent 
+
+
+
