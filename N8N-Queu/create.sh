@@ -6,4 +6,4 @@ multipass delete worker
 multipass purge
 
 multipass launch docker --name master
-#multipass launch docker --name worker
+multipass launch docker --name worker
