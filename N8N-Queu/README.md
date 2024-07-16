@@ -1,4 +1,5 @@
-docker swarm init
+docker swarm init --advertise-addr IP_DO_MASTER
+docker promote nodeX # promover para VICE_MASTER
 
 docker swarm join --token SWMTKN-1-4vmgzh2e0eji0d255p6j203p4hgyo5tygi0gc0k60ngpf4bica-1vz2vfr880kx7wgyg9yukh1hd 10.224.145.221:2377
 

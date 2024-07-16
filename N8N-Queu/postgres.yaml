@@ -1,35 +1,31 @@
 version: "3.8"
 
+# mais info: https://youtu.be/tQ6-A1wl-C0
 services:
-  mongodb:
-    image: mongo:7
+  postgres:
+    image: postgres:16.3-alpine3.19
+    command: [postgres, --max_connections=100]
     networks:
-      - app_network
-    volumes:
-      - mongodb_data:/data/db
-      - mongodb_configdb_data:/data/configdb
+      - postgres_network
     environment:
-      MONGO_INITDB_ROOT_USERNAME: <USUARIO_AQUI>
-      MONGO_INITDB_ROOT_PASSWORD: <SUA_SENHA_AQUI>
-      PUID: 1000
-      PGID: 1000
+      POSTGRES_PASSWORD: UltraSecretPassWord
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
+#      mode: replicated
+#      replicas: 1
+#      placement:
+#         constraints: [ node.role == manager ]
       resources:
         limits:
-          cpus: "0.5"
-          memory: 512M
+          cpus: "0.55"
+          memory: 420M
 
 volumes:
-  mongodb_data:
-    external: true
-  mongodb_configdb_data:
+  postgres_data:
     external: true
 
 networks:
-  app_network:
+  postgres_network:
     external: true
+

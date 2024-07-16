@@ -3,22 +3,21 @@ version: "3.8"
 # mais info: https://youtu.be/tQ6-A1wl-C0
 services:
   redis:
-    image: redis:7
+    image: redis:7.2.5-alpine
     command: ["redis-server", "--appendonly", "yes", "--port", "6379"]
     networks:
       - app_network
     volumes:
       - redis_data:/data
     deploy:
-      mode: replicated
-      replicas: 1
+#      mode: replicated
+#      replicas: 1
+#      placement:
+#        constraints: [ node.role == manager ]
       resources:
         limits:
           cpus: "0.5"
           memory: 512M
-      placement:
-        constraints:
-          - node.role == manager
 
 volumes:
   redis_data:
@@ -27,3 +26,4 @@ volumes:
 networks:
   app_network:
     external: true
+
