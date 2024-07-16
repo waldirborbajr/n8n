@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ollama.rule=Host(`ollama.aulafabricando.online`)" #Troque pelo seu dominio
+      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+      - "traefik.http.routers.ollama.entrypoints=web"
+      # Use as próximas linhas apenas se você tiver um entrypoint https configurado no Traefik
+      - "traefik.http.routers.ollama-secure.rule=Host(`ollama.aulafabricando.online`)" #Troque pelo seu dominio
+      - "traefik.http.routers.ollama-secure.entrypoints=websecure"
+      - "traefik.http.routers.ollama-secure.tls.certresolver=leresolver"
+
+    healthcheck:
+      test: ollama list || exit 1
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+    networks:
+      - ollama
+
+  ollama-webui:
+    image: ghcr.io/ollama-webui/ollama-webui:main
+    environment:
+      - OLLAMA_API_BASE_URL=http://ollama:11434/api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ollama-webui.rule=Host(`webgpt.aulafabricando.online`)" #Troque pelo seu dominio
+      - "traefik.http.services.ollama-webui.loadbalancer.server.port=8080"
+      - "traefik.http.routers.ollama-webui.entrypoints=web"
+      - "traefik.http.routers.ollama-webui-secure.rule=Host(`webgpt.aulafabricando.online`)" #Troque pelo seu dominio
+      - "traefik.http.routers.ollama-webui-secure.entrypoints=websecure"
+      - "traefik.http.routers.ollama-webui-secure.tls.certresolver=leresolver"
+
+    volumes:
+      - ollama_webui_data:/app/backend/data
+    networks:
+      - ollama
+
+  ollama-models-pull:
+    image: curlimages/curl:8.6.0
+    command: >-
+      http://ollama:11434/api/pull -d '{"name": "mistral"}'
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - ollama
+
+networks:
+  ollama:
+    external: true
+
+volumes:
+  ollama_data:
+  ollama_webui_data:

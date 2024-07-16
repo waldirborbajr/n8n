@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  app:
+    image: nocobase/nocobase:main
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nocobase.rule=Host(`nocobase.meusite.com`)" #Troque pelo seu domínio
+      - "traefik.http.services.nocobase.loadbalancer.server.port=80"
+      - "traefik.http.routers.nocobase.entrypoints=websecure"
+      - "traefik.http.routers.nocobase.tls.certresolver=leresolver"
+    environment:
+      - DB_DIALECT=postgres
+      - DB_HOST=postgres
+      - DB_DATABASE=nocobase
+      - DB_USER=nocobase
+      - DB_PASSWORD=nocobase
+      - LOCAL_STORAGE_BASE_URL=/storage/uploads
+      - APP_KEY=3SLSWZPQQBB7WBRYDAQZ5J77W5D7I6GU
+      - API_BASE_PATH=/api/
+      - PROXY_TARGET_URL=nocobase.meusite.com #Troque pelo seu domínio
+      - INIT_ROOT_EMAIL=seuemail@seusite.com #Troque pelo seu email
+      - INIT_ROOT_PASSWORD=nocobase
+      - INIT_ROOT_NICKNAME=Super Admin
+      - INIT_ROOT_USERNAME=nocobase
+    volumes:
+      - nocobase_storage:/app/nocobase/storage
+
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:10
+    restart: always
+    command: postgres -c wal_level=logical
+    environment:
+      POSTGRES_USER: nocobase
+      POSTGRES_DB: nocobase
+      POSTGRES_PASSWORD: nocobase
+    volumes:
+      - nocobase_postgres:/var/lib/postgresql/data
+
+networks:
+  default:
+    name: nocobase
+    external: true
+
+volumes:
+  nocobase_postgres:
+  nocobase_storage:

@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  flowise:
+    image: flowiseai/flowise:latest
+    restart: always
+    environment:
+      FLOWISE_USERNAME: fabricandosuaideia #Troque pelo seu nome
+      FLOWISE_PASSWORD: minhasenha #Troque pela sua senha
+      DATABASE_PATH: /root/.flowise
+      DATABASE_TYPE: postgres
+      DATABASE_PORT: 5432
+      DATABASE_HOST: postgres
+      DATABASE_NAME: flowise #Troque pelo seu nome de banco
+      DATABASE_USER: postgres #Troque pelo seu nome de usuario
+      DATABASE_PASSWORD: senhabanco #Troque pela sua senha
+      APIKEY_PATH: /root/.flowise
+      SECRETKEY_PATH: /root/.flowise
+      FLOWISE_SECRETKEY_OVERWRITE: MYozm6ZJVvxVf39DPjUvtRIn7Y5ov2Nm #Troque pela sua chave
+      BLOB_STORAGE_PATH: /root/.flowise/storage
+      DEBUG: "true"
+      LOG_LEVEL: debug
+      LOG_PATH: /root/.flowise/logs
+    volumes:
+      - flowise_db:/root/.flowise
+    entrypoint: /bin/sh -c "sleep 3; flowise start"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flowise.rule=Host(`flowise.meusite.com`)" #Troque pelo seu domínio
+      - "traefik.http.services.flowise.loadbalancer.server.port=3000"
+      - "traefik.http.routers.flowise.entrypoints=websecure"
+      - "traefik.http.routers.flowise.tls.certresolver=leresolver"
+      - "traefik.http.routers.flowise.service=flowise"
+  
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: postgres #Troque pelo seu nome de usuario
+      POSTGRES_DB: flowise #Troque pelo seu nome de banco
+      POSTGRES_PASSWORD: senhabanco #Troque pela sua senha
+    volumes:
+      - flowise_db_postgres:/var/lib/postgresql/data
+
+volumes:
+  flowise_db:
+  flowise_db_postgres:
+
+networks:
+  default:
+    name: flowise
+    external: true

@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  langflow:
+    image: langflowai/langflow:latest
+    user: root
+    depends_on:
+      - postgres
+    environment:
+      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
+      # This variable defines where the logs, file storage, monitor data and secret keys are stored.
+      - LANGFLOW_CONFIG_DIR=/var/lib/langflow
+      - LANGFLOW_SUPERUSER=fabricandosuaideia # Defina o seu usuario
+      - LANGFLOW_SUPERUSER_PASSWORD=senhadelogin # Defina sua senha
+      - LANGFLOW_NEW_USER_IS_ACTIVE=true # Mude para false depois do seu primeiro login
+      - LANGFLOW_AUTO_LOGIN=false
+      - BACKEND_URL=langflow.aulafabricando.online
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.langflow.rule=Host(`langflow.meudominio.com.br`)" # Troque pelo seu dominio ou subdominio
+      - "traefik.http.routers.langflow.entrypoints=web,websecure"
+      - "traefik.http.routers.langflow.tls.certresolver=leresolver"
+      - "traefik.http.services.langflow.loadbalancer.server.port=7860"
+    volumes:
+      - langflow-data:/var/lib/langflow
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: langflow
+      POSTGRES_PASSWORD: langflow
+      POSTGRES_DB: langflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - langflow-postgres:/var/lib/postgresql/data
+
+volumes:
+  langflow-postgres:
+  langflow-data:
+
+networks:
+  default:
+    name: langflow
+    external: true

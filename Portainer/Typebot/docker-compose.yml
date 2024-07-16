@@ -1,0 +1,113 @@
+version: '3.8'
+services:
+  typebot-db:
+    image: postgres:13
+    restart: always
+    volumes:
+      - typebot_db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=typebot # Nome do Banco de Dados
+      - POSTGRES_PASSWORD=typebot # Senha do Banco de Dados
+    networks:
+      - typebot
+
+  typebot-builder:
+    image: baptistearno/typebot-builder:latest
+    restart: always
+    depends_on:
+      - typebot-db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.typebot-builder.rule=Host(`painelconstrutor.seudominio.com`)" # Troque pelo seu dominio ou subdominio
+      - "traefik.http.routers.typebot-builder.entrypoints=web,websecure"
+      - "traefik.http.routers.typebot-builder.tls.certresolver=leresolver"
+    environment:
+      - DATABASE_URL=postgresql://postgres:typebot@typebot-db:5432/typebot # Se voce mudou a senha ou o nome do banco mude esta linha seguindo este padrao DATABASE_URL=postgresql://postgres:Senha@typebot-db:5432/Nome do Banco de Dados NÃO USE ESPACOS
+      - NEXTAUTH_URL=https://painelconstrutor.seudominio.com # Troque pelo seu dominio ou subdominio
+      - NEXT_PUBLIC_VIEWER_URL=https://chat.seudominio.com # Troque pelo seu dominio ou subdominio
+      - ENCRYPTION_SECRET=K+Bar660Ofaec7v1jHC25tAn3l2b7c81
+      - ADMIN_EMAIL=aula@seudominio.com # Troque pelo seu email
+      - DISABLE_SIGNUP=false # Mude Para false caso queira permitir que outras pessoas criem contas é nescessario estar como false no primeiro login do administrador
+      - SMTP_AUTH_DISABLED=false
+      - SMTP_SECURE=true # Troque para false seu nao usar a porta 465 ou se estiver enfretando problemas no login
+      - SMTP_HOST=seu.smtp.com # Troque pelo seu SMTP USE SOMENTE DOMINIO PROPRIETARIOS
+      - SMTP_PORT=465 # altere aqui se nescessario portas comuns 25, 587, 465, 2525
+      - SMTP_USERNAME=aula@seudominio.com # Troque pelo seu email
+      - SMTP_PASSWORD=suasenhadoemail # Troque pela sua senha
+      - NEXT_PUBLIC_SMTP_FROM=aula@seudominio.com # Troque pelo seu email
+      - S3_ACCESS_KEY=minio # Troque se necessario
+      - S3_SECRET_KEY=minio123 # Troque se necessario
+      - S3_BUCKET=typebot
+      - S3_ENDPOINT=storage.seudominio.com # Troque pelo seu dominio ou subdominio
+    networks:
+      - typebot
+
+  typebot-viewer:
+    image: baptistearno/typebot-viewer:latest
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.typebot-viewer.rule=Host(`chat.seudominio.com`)" # Troque pelo seu dominio ou subdominio
+      - "traefik.http.routers.typebot-viewer.entrypoints=web,websecure"
+      - "traefik.http.routers.typebot-viewer.tls.certresolver=leresolver"
+    environment:
+      - DATABASE_URL=postgresql://postgres:typebot@typebot-db:5432/typebot # Se voce mudou a senha ou o nome do banco mude esta linha seguindo este padrao DATABASE_URL=postgresql://postgres:Senha@typebot-db:5432/Nome do Banco de Dados NÃO USE ESPACOS
+      - NEXTAUTH_URL=https://painelconstrutor.seudominio.com # Troque pelo seu dominio ou subdominio
+      - NEXT_PUBLIC_VIEWER_URL=https://chat.seudominio.com # Troque pelo seu dominio ou subdominio
+      - ENCRYPTION_SECRET=K+Bar660Ofaec7v1jHC25tAn3l2b7c81
+      - SMTP_HOST=seu.smtp.com # Troque pelo seu SMTP USE SOMENTE DOMINIO PROPRIETARIOS
+      - NEXT_PUBLIC_SMTP_FROM=aula@seudominio.com # Troque pelo seu email
+      - S3_ACCESS_KEY=minio # Troque se necessario - Deve ser Igual ao Declarado no Typebot Builder S3_ACCESS_KEY=
+      - S3_SECRET_KEY=minio123 # Troque se necessario - Deve ser Igual ao Declarado no Typebot Builder S3_SECRET_KEY=
+      - S3_BUCKET=typebot
+      - S3_ENDPOINT=storage.seudominio.com # Troque pelo seu dominio ou subdominio
+    networks:
+      - typebot
+
+  mail:
+    image: bytemark/smtp
+    restart: always
+    networks:
+      - typebot
+
+  minio:
+    image: minio/minio
+    restart: always
+    command: server /data
+    ports:
+      - '9000:9000'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`storage.seudominio.com`)" # Troque pelo seu dominio ou subdominio
+      - "traefik.http.routers.minio.entrypoints=web,websecure"
+      - "traefik.http.routers.minio.tls.certresolver=leresolver"
+    environment:
+      MINIO_ROOT_USER: minio # Troque se necessario - Deve ser Igual ao Declarado no Typebot Builder S3_ACCESS_KEY=
+      MINIO_ROOT_PASSWORD: minio123 # Troque se necessario - Deve ser Igual ao Declarado no Typebot Builder S3_SECRET_KEY=
+    volumes:
+      - typebot_s3_data:/data
+    networks:
+      - typebot
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10;
+      /usr/bin/mc config host add minio http://minio:9000 minio minio123;
+      /usr/bin/mc mb minio/typebot;
+      /usr/bin/mc anonymous set public minio/typebot/public;
+      exit 0;
+      "
+    networks:
+      - typebot
+
+volumes:
+  typebot_db_data:
+  typebot_s3_data:
+
+networks:
+  typebot:
+    external: true

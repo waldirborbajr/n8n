@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  evolution_api:
+    image: atendai/evolution-api
+    restart: always
+    volumes:
+      - evolution_instances:/evolution/instances
+      - evolution_store:/evolution/store
+      #- evolution_manager:/evolution/Extras/appsmith
+      #- evolution_views:/evolution/views
+    environment:
+      SERVER_URL: 'https://evolutionapi.aulafabricando.online'
+      CONFIG_SESSION_PHONE_CLIENT: FabricandoSuaIdeia
+      # Browser Name = Chrome | Firefox | Edge | Opera | Safari
+      CONFIG_SESSION_PHONE_NAME: Chrome
+      AUTHENTICATION_TYPE: apikey
+      AUTHENTICATION_API_KEY: suaapikey
+      AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: true
+      ## Set the secret key to encrypt and decrypt your token and its expiration time
+      # seconds - 3600s ===1h | zero (0) - never expires
+      AUTHENTICATION_JWT_EXPIRIN_IN: 0
+      AUTHENTICATION_JWT_SECRET: 'L=0YWt]b2w[WF>#>:&E`'
+      # Temporary data storage
+      STORE_MESSAGES: true
+      STORE_MESSAGE_UP: true
+      STORE_CONTACTS: true
+      STORE_CHATS: true
+      # Determine the logs to be displayed
+      LOG_LEVEL: ERROR
+      # Set Store Interval in Seconds (7200 = 2h)
+      CLEAN_STORE_CLEANING_INTERVAL: 7200
+      CLEAN_STORE_MESSAGES: true
+      CLEAN_STORE_MESSAGE_UP: true
+      CLEAN_STORE_CONTACTS: true
+      CLEAN_STORE_CHATS: true
+      ## Define a global webhook that will listen for enabled events from all instances
+      WEBHOOK_GLOBAL_URL: ''
+      WEBHOOK_GLOBAL_ENABLED: false
+      # With this option activated, you work with a url per webhook event, respecting the global url and the name of each event
+      WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS: false
+      ## Set the events you want to hear  
+      WEBHOOK_EVENTS_APPLICATION_STARTUP: false
+      WEBHOOK_EVENTS_QRCODE_UPDATED: true
+      WEBHOOK_EVENTS_MESSAGES_SET: true
+      WEBHOOK_EVENTS_MESSAGES_UPSERT: true
+      WEBHOOK_EVENTS_MESSAGES_UPDATE: true
+      WEBHOOK_EVENTS_MESSAGES_DELETE: true
+      WEBHOOK_EVENTS_SEND_MESSAGE: true
+      WEBHOOK_EVENTS_CONTACTS_SET: true
+      WEBHOOK_EVENTS_CONTACTS_UPSERT: true
+      WEBHOOK_EVENTS_CONTACTS_UPDATE: true
+      WEBHOOK_EVENTS_PRESENCE_UPDATE: true
+      WEBHOOK_EVENTS_CHATS_SET: true
+      WEBHOOK_EVENTS_CHATS_UPSERT: true
+      WEBHOOK_EVENTS_CHATS_UPDATE: true
+      WEBHOOK_EVENTS_CHATS_DELETE: true
+      WEBHOOK_EVENTS_GROUPS_UPSERT: true
+      WEBHOOK_EVENTS_GROUPS_UPDATE: true
+      WEBHOOK_EVENTS_GROUP_PARTICIPANTS_UPDATE: true
+      WEBHOOK_EVENTS_CONNECTION_UPDATE: true
+      WEBHOOK_EVENTS_CALL: true
+      # This event fires every time a new token is requested via the refresh route
+      WEBHOOK_EVENTS_NEW_JWT_TOKEN: false
+      # This events is used with Typebot
+      WEBHOOK_EVENTS_TYPEBOT_START: false
+      WEBHOOK_EVENTS_TYPEBOT_CHANGE_STATUS: false
+      # This event is used with Chama AI
+      WEBHOOK_EVENTS_CHAMA_AI_ACTION: false
+      # This event is used to send errors
+      WEBHOOK_EVENTS_ERRORS: false
+      WEBHOOK_EVENTS_ERRORS_WEBHOOK:
+      # Set qrcode display limit
+      QRCODE_LIMIT: 30
+      QRCODE_COLOR: #198754
+    labels:
+       - "traefik.enable=true"
+       #SSL
+       #Troque pelo seu dominio
+       - "traefik.http.routers.evolution_api.rule=Host(`evolutionapi.seusite.com.br`)"
+       - "traefik.http.services.evolution_api.loadbalancer.server.port=8080"
+       - "traefik.http.routers.evolution_api.service=evolution_api"
+       - "traefik.http.routers.evolution_api.entrypoints=websecure"
+       - "traefik.http.routers.evolution_api.tls.certresolver=leresolver"
+
+    networks:
+        - evolutionapi
+
+networks:
+  evolutionapi:
+    external: true
+
+volumes:
+  evolution_instances:
+  evolution_store:
+  #evolution_manager:
+  #evolution_views:
