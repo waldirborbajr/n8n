@@ -11,4 +11,16 @@ docker network create --driver=overlay traefik_public
 docker stop portainer
 docker start portainer
 
+# Update
 
+## Standalone
+
+docker pull portainer/portainer-ce:2.20.3
+
+docker run -d -p 8000:8000 -p 9443:9443 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:2.20.3
+
+## Swarm
+
+docker pull portainer/portainer-ce:2.20.3
+
+docker service update --image portainer/portainer-ce:2.20.3 --publish-add 9443:9443 --force portainer_portainer
