@@ -1,7 +1,7 @@
 
 ## Download Manifest
 
-curl -L https://downloads.portainer.io/ee2-20/portainer-agent-stack.yml -o portainer-agent-stack.yml
+curl -L https://downloads.portainer.io/ce2-20/portainer-agent-stack.yml -o portainer-agent-stack.yml
 
 docker stack deploy -c portainer-agent-stack.yml portainer
 
@@ -10,7 +10,7 @@ docker stack deploy -c portainer-agent-stack.yml portainer
 docker swarm init --advertise-addr IP_DO_MASTER
 docker promote nodeX # promover para VICE_MASTER
 
-docker swarm join --token SWMTKN-1-4vmgzh2e0eji0d255p6j203p4hgyo5tygi0gc0k60ngpf4bica-1vz2vfr880kx7wgyg9yukh1hd 10.224.145.221:2377
+docker swarm join --token SWMTKN-1-2iznpzhb6odpcd5y3u8m0fh3yw1qy0fzbr2evmeu53k3ndlqgr-1iehg013hl8tbl1b2u6v5hkif 10.224.145.183:2377
 
 ## Deploy Stack
 
