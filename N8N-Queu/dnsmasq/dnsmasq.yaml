@@ -31,7 +31,7 @@ services:
         limits:
           cpus: "0.55"
           memory: 220M
-      
+
 #networks:
 #  app_network:
 #    external: true
