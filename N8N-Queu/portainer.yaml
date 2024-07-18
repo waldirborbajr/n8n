@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   agent:
     image: portainer/agent:2.20.3
@@ -21,7 +19,7 @@ services:
       - "9000:9000"
 #      - "8000:8000"
     volumes:
-      - portainer_data:/data
+      - portainer_storage:/data
     networks:
       - agent_network
       - traefik_public
@@ -48,5 +46,5 @@ networks:
     external: true
 
 volumes:
-  portainer_data:
+  portainer_storage:
     external: true

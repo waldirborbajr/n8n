@@ -10,7 +10,7 @@ docker stack deploy -c portainer-agent-stack.yml portainer
 docker swarm init --advertise-addr IP_DO_MASTER
 docker promote nodeX # promover para VICE_MASTER
 
-docker swarm join --token SWMTKN-1-2iznpzhb6odpcd5y3u8m0fh3yw1qy0fzbr2evmeu53k3ndlqgr-1iehg013hl8tbl1b2u6v5hkif 10.224.145.183:2377
+docker swarm join --token SWMTKN-1-0bts0kp693npxlzxa83ofnh8owsx4k43l31vxfcx9eu73lgslh-8bf120dx0reaqhcnmy21st27e 10.224.145.42:2377
 
 ## Deploy Stack
 
@@ -52,7 +52,7 @@ sudo lsof -nP -iTCP -iUDP -sTCP:LISTEN
 
 ## Edit line as below
 
-nano /etc/systemd/resolved.conf
+sudo nano /etc/systemd/resolved.conf
 
 DNSStubListener=no
 
