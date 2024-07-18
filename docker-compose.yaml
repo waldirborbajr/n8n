@@ -9,8 +9,9 @@ volumes:
 
 x-logging: &default-logging
   options:
-    max-size: "100m"
+    max-size: "10m"
     max-file: "5"
+#    compress: "true"
   driver: json-file
 
 x-shared: &shared

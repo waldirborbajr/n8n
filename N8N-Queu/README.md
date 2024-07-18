@@ -28,6 +28,10 @@ docker start portainer
 
 ## Standalone
 
+docker stop portainer
+
+docker container prune -f
+
 docker pull portainer/portainer-ce:2.20.3
 
 docker run -d -p 8000:8000 -p 9443:9443 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:2.20.3
@@ -42,5 +46,16 @@ docker service update --image portainer/portainer-ce:2.20.3 --publish-add 9000:9
 docker pull portainer/agent:2.20.3
 docker service update --image portainer/agent:2.20.3 --force portainer_agent 
 
+# DNS
+
+sudo lsof -nP -iTCP -iUDP -sTCP:LISTEN
+
+## Edit line as below
+
+nano /etc/systemd/resolved.conf
+
+DNSStubListener=no
+
+sudo systemctl restart systemd-resolved
 
 
