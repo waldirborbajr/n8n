@@ -13,19 +13,19 @@ small() {
   tmux send-keys -t $SESSION_NAME:1 'ngrok http 5678' C-m
 
   tmux -u new-window -t $SESSION_NAME:2 -n "redis"
-  tmux send-keys -t $SESSION_NAME:2 'docker run --rm --name n8n-redis --network=n8n -d -p 6379:6379 redis' C-m
+  tmux send-keys -t $SESSION_NAME:2 'sleep 6 && ./n8n-compose' C-m
 
-  tmux -u new-window -t $SESSION_NAME:3 -n "postgresql"
-  tmux send-keys -t $SESSION_NAME:3 'docker run \
-    --rm \
-    --name n8n-postgres \
-    --network=n8n \
-    -e POSTGRES_PASSWORD=mypasswd \
-    -p 5432:5432 \
-    postgres' C-m
-
-  tmux -u new-window -t $SESSION_NAME:4 -n "n8n"
-  tmux send-keys -t $SESSION_NAME:4 './startn8n' C-m
+  # tmux -u new-window -t $SESSION_NAME:3 -n "postgresql"
+  # tmux send-keys -t $SESSION_NAME:3 'docker run \
+  #   --rm \
+  #   --name n8n-postgres \
+  #   --network=n8n \
+  #   -e POSTGRES_PASSWORD=mypasswd \
+  #   -p 5432:5432 \
+  #   postgres' C-m
+  #
+  # tmux -u new-window -t $SESSION_NAME:4 -n "n8n"
+  # tmux send-keys -t $SESSION_NAME:4 './startn8n' C-m
 
   # Attach to the newly created session
   tmux -u attach-session -t $SESSION_NAME:1
