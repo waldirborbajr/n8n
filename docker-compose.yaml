@@ -86,36 +86,36 @@ services:
   #     CUSTOM_NGINX_SERVER_CONFIG_BLOCK: |
   #         proxy_buffering off;
 
-  baserow:
-    image: ${BASEROW_IMAGE}
-    container_name: n8n-baserow
-    logging: *default-logging
-    networks:
-      - n8n-net
-    volumes:
-      - baserow_storage:/baserow/data
-    ports:
-      - 80:80
-      - 443:443
-    environment:
-      - BASEROW_PUBLIC_URL=${BASEROW_PUBLIC_URL}
-    deploy:
-      # mode: replicated
-      # replicas: 1
-      # placement:
-      #   constraints:
-      #     - node.role == manager
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 1024M
-      # labels:
-      #   - traefik.enable=true
-      #   - traefik.http.routers.baserow.rule=Host(`baserow.SEU_DOMINIO.com.br`)
-      #   - traefik.http.routers.baserow.entrypoints=websecure
-      #   - traefik.http.routers.baserow.tls.certresolver=le
-      #   - traefik.http.routers.baserow.service=baserow
-      #   - traefik.http.services.baserow.loadbalancer.server.port=80
+  # baserow:
+  #   image: ${BASEROW_IMAGE}
+  #   container_name: n8n-baserow
+  #   logging: *default-logging
+  #   networks:
+  #     - n8n-net
+  #   volumes:
+  #     - baserow_storage:/baserow/data
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   environment:
+  #     - BASEROW_PUBLIC_URL=${BASEROW_PUBLIC_URL}
+  #   deploy:
+  #     # mode: replicated
+  #     # replicas: 1
+  #     # placement:
+  #     #   constraints:
+  #     #     - node.role == manager
+  #     resources:
+  #       limits:
+  #         cpus: "0.5"
+  #         memory: 1024M
+  #     # labels:
+  #     #   - traefik.enable=true
+  #     #   - traefik.http.routers.baserow.rule=Host(`baserow.SEU_DOMINIO.com.br`)
+  #     #   - traefik.http.routers.baserow.entrypoints=websecure
+  #     #   - traefik.http.routers.baserow.tls.certresolver=le
+  #     #   - traefik.http.routers.baserow.service=baserow
+  #     #   - traefik.http.services.baserow.loadbalancer.server.port=80
 
   postgres:
     image: ${POSTGRES_IMAGE}
