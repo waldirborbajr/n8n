@@ -8,6 +8,8 @@ volumes:
   baserow_storage:
     external: true
   redis_storage:
+  evolution_store:
+  evolution_instances:
 
 x-logging: &default-logging
   options:
@@ -54,6 +56,20 @@ x-shared: &shared
       condition: service_healthy
 
 services:
+
+  evolution-api:
+    container_name: n8n-evolution_api
+    image: ${EVOLUTION_IMAGE}
+    restart: unless-stopped
+    logging: *default-logging
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - evolution_store:/evolution/store
+      - evolution_instances:/evolution/instances
+
   # https-portal:
   #   image: steveltn/https-portal:1
   #   container_name: n8n-https-portal
@@ -70,38 +86,37 @@ services:
   #     CUSTOM_NGINX_SERVER_CONFIG_BLOCK: |
   #         proxy_buffering off;
 
+  baserow:
+    image: ${BASEROW_IMAGE}
+    container_name: n8n-baserow
+    logging: *default-logging
+    networks:
+      - n8n-net
+    volumes:
+      - baserow_storage:/baserow/data
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - BASEROW_PUBLIC_URL=${BASEROW_PUBLIC_URL}
+    deploy:
+      # mode: replicated
+      # replicas: 1
+      # placement:
+      #   constraints:
+      #     - node.role == manager
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1024M
+      # labels:
+      #   - traefik.enable=true
+      #   - traefik.http.routers.baserow.rule=Host(`baserow.SEU_DOMINIO.com.br`)
+      #   - traefik.http.routers.baserow.entrypoints=websecure
+      #   - traefik.http.routers.baserow.tls.certresolver=le
+      #   - traefik.http.routers.baserow.service=baserow
+      #   - traefik.http.services.baserow.loadbalancer.server.port=80
 
-  # baserow:
-  #   image: ${BASEROW_IMAGE}
-  #   container_name: n8n-baserow
-  #   logging: *default-logging
-  #   networks:
-  #     - n8n-net
-  #   volumes:
-  #     - baserow_storage:/baserow/data
-  #   ports:
-  #     - 80:80
-  #     - 443:443
-  #   environment:
-  #     BASEROW_PUBLIC_URL: http://localhost
-  #   deploy:
-  #     # mode: replicated
-  #     # replicas: 1
-  #     # placement:
-  #     #   constraints:
-  #     #     - node.role == manager
-  #     resources:
-  #       limits:
-  #         cpus: "0.5"
-  #         memory: 1024M
-  #     # labels:
-  #     #   - traefik.enable=true
-  #     #   - traefik.http.routers.baserow.rule=Host(`baserow.SEU_DOMINIO.com.br`)
-  #     #   - traefik.http.routers.baserow.entrypoints=websecure
-  #     #   - traefik.http.routers.baserow.tls.certresolver=le
-  #     #   - traefik.http.routers.baserow.service=baserow
-  #     #   - traefik.http.services.baserow.loadbalancer.server.port=80
-  #
   postgres:
     image: ${POSTGRES_IMAGE}
     container_name: n8n-postgresql
