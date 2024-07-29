@@ -14,8 +14,13 @@ multipass launch docker --name worker1
 multipass launch docker --name worker2
 multipass launch docker --name worker3
 
-# multipass exec manager -- sudo apt update && sudo apt upgrade -y
-# multipass exec reachable -- sudo apt update && sudo apt upgrade -y
-# multipass exec worker1 -- sudo apt update && sudo apt upgrade -y
-# multipass exec worker2 -- sudo apt update && sudo apt upgrade -y
-# multipass exec worker3 -- sudo apt update && sudo apt upgrade -y
+multipass exec manager -- sudo apt update
+multipass exec manager -- sudo apt upgrade -y
+multipass exec reachable -- sudo apt update
+multipass exec reachable -- sudo apt upgrade -y
+multipass exec worker1 -- sudo apt update
+multipass exec worker1 -- sudo apt upgrade -y
+multipass exec worker2 -- sudo apt update
+multipass exec worker2 -- sudo apt upgrade -y
+multipass exec worker3 -- sudo apt update
+multipass exec worker3 -- sudo apt upgrade -y

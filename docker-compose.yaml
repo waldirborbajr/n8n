@@ -60,12 +60,13 @@ services:
   evolution-api:
     container_name: n8n-evolution_api
     image: ${EVOLUTION_IMAGE}
+    command: ["node", "./dist/src/main.js"]
     restart: unless-stopped
     logging: *default-logging
     ports:
       - "8080:8080"
-    env_file:
-      - .env
+    environment:
+      - API_KEY=${EVOLUTION_API_KEY}
     volumes:
       - evolution_store:/evolution/store
       - evolution_instances:/evolution/instances
