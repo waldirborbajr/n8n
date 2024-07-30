@@ -1,16 +1,17 @@
-version: "3.8"
-
 # mais info: https://youtu.be/tQ6-A1wl-C0
 services:
   postgres:
     image: postgres:16.3-alpine3.19
     command: [postgres, --max_connections=100]
+    restart: unless-stopped
     networks:
       - postgres_network
     environment:
-      POSTGRES_PASSWORD: UltraSecretPassWord
+      - POSTGRES_PASSWORD=4xtcEDGKVXl8LljsxcpWdO7nfydrnw5p
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+      - TZ=America/Sao_Paulo      
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_storage:/var/lib/postgresql/data
     deploy:
 #      mode: replicated
 #      replicas: 1
@@ -22,7 +23,7 @@ services:
           memory: 420M
 
 volumes:
-  postgres_data:
+  postgres_storage:
     external: true
 
 networks:

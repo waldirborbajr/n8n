@@ -1,4 +1,0 @@
-zone "bplus.intra" {
-    type master;
-    file "/etc/bind/zones/db.bplus.intra";
-};

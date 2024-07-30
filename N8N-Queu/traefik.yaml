@@ -1,42 +1,49 @@
-version: '3.8'
-
 # mais info: https://youtu.be/o7tBbYy-5I4
 services:
   traefik:
     image: traefik:v3.1.0
+    environment:
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+      - TZ=America/Sao_Paulo    
     command:
-      - --providers.docker=true
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --providers.docker.exposedbydefault=false
-      - --providers.docker.swarmMode=true
-      #defina a mesma rede que você criou para o traefik
-      - --providers.docker.network=traefik_public
-      - --providers.docker.endpoint=unix:///var/run/docker.sock
-      # Config para SSL Lets Encrypt
-      - --certificatesresolvers.le.acme.httpchallenge=true
-      #- --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
-      # altere para seu e-mail
-      - --certificatesresolvers.le.acme.email=wborbajr@gmail.com
-      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
-      - --certificatesresolvers.le.acme.tlschallenge=true
-      # Global HTTP -> HTTPS
-      #- --entrypoints.web.http.redirections.entryPoint.to=websecure
-      #- --entrypoints.web.http.redirections.entryPoint.scheme=https
-      #- --api
-      - --log.level=DEBUG
+      - "--api.dashboard=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=minha_rede"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencryptresolver.acme.email=wborbajr@gmail.com"
+      - "--certificatesresolvers.letsencryptresolver.acme.storage=/etc/traefik/letsencrypt/acme.json"
+      - "--log.level=DEBUG"
+      - "--log.format=common"
+      - "--log.filePath=/var/log/traefik/traefik.log"
+      - "--accesslog=true"
+      - "--accesslog.filepath=/var/log/traefik/access-log"
     ports:
       - "80:80"
       #- "8080:8080" # porta do painel do traefik, caso queira ver todas as rotas.
       - "443:443"
     volumes:
-      - traefik_certificates:/letsencrypt
+      - traefik_storage:/letsencrypt
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     deploy:
 #      mode: replicated
 #      replicas: 1
 #      placement:
 #        constraints: [ node.role == manager ]
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.redirect-https.redirectscheme.permanent=true"
+        - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+        - "traefik.http.routers.http-catchall.entrypoints=web"
+        - "traefik.http.routers.http-catchall.middlewares=redirect-https@docker"
+        - "traefik.http.routers.http-catchall.priority=1"
       resources:
         limits:
           cpus: "0.55"
@@ -45,7 +52,7 @@ services:
       - traefik_public
 
 volumes:
-  traefik_certificates:
+  traefik_storage:
     external: true
 
 networks:

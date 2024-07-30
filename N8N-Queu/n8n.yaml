@@ -5,7 +5,7 @@ services:
     image: n8nio/n8n:1.50.0
     command: start
     networks:
-      - app_network
+      - n8n_network
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_DATABASE=n8n_queue
@@ -14,8 +14,8 @@ services:
       - DB_POSTGRESDB_USER=postgres
       - DB_POSTGRESDB_PASSWORD=UltraSecretPassWord
       - N8N_ENCRYPTION_KEY=r3djGX2vPoeL9zKL
-      - N8N_HOST=n8n.seudominio.com.br
-      - N8N_EDITOR_BASE_URL=https://n8n.seudominio.com.br/
+      - N8N_HOST=n8n.bplus.intra
+      - N8N_EDITOR_BASE_URL=https://n8n.bplus.intra/
       - N8N_PROTOCOL=https
       - NODE_ENV=production
       - WEBHOOK_URL=https://webhook.seudominio.com.br/
@@ -52,7 +52,7 @@ services:
     image: n8nio/n8n:1.50.0
     command: webhook
     networks:
-      - app_network
+      - n8n_network
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_DATABASE=n8n_queue
@@ -61,8 +61,8 @@ services:
       - DB_POSTGRESDB_USER=postgres
       - DB_POSTGRESDB_PASSWORD=UltraSecretPassWord
       - N8N_ENCRYPTION_KEY=r3djGX2vPoeL9zKL
-      - N8N_HOST=n8n.seudominio
-      - N8N_EDITOR_BASE_URL=https://n8n.seudominio/
+      - N8N_HOST=n8n.bplus.intra
+      - N8N_EDITOR_BASE_URL=https://n8n.bplus.intra/
       - N8N_PROTOCOL=https
       - NODE_ENV=production
       - WEBHOOK_URL=https://webhook.seudominio/
@@ -99,7 +99,7 @@ services:
     image: n8nio/n8n:1.50.0
     command: worker --concurrency=7
     networks:
-      - app_network
+      - n8n_network
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_DATABASE=n8n_queue
@@ -109,7 +109,7 @@ services:
       - DB_POSTGRESDB_PASSWORD=UltraSecretPassWord
       - N8N_ENCRYPTION_KEY=r3djGX2vPoeL9zKL
       - N8N_HOST=n8n.seudominio
-      - N8N_EDITOR_BASE_URL=https://n8n.seudominio/
+      - N8N_EDITOR_BASE_URL=https://n8n.bplus.intra/
       - N8N_PROTOCOL=https
       - NODE_ENV=production
       - WEBHOOK_URL=https://webhook.seudominio/
@@ -133,7 +133,7 @@ services:
           memory: 1024M
 
 networks:
-  app_network:
+  n8n_network:
     external: true
 
 

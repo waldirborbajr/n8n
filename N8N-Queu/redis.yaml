@@ -1,29 +1,35 @@
-version: "3.8"
-
 # mais info: https://youtu.be/tQ6-A1wl-C0
 services:
   redis:
     image: redis:7.2.5-alpine
     command: ["redis-server", "--appendonly", "yes", "--port", "6379"]
     networks:
-      - app_network
+      - redis_network
     volumes:
-      - redis_data:/data
+      - redis_storage:/data
+    environment:
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+      - TZ=America/Sao_Paulo
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+        #    compress: "true"
+        driver: json-file
     deploy:
-#      mode: replicated
-#      replicas: 1
-#      placement:
-#        constraints: [ node.role == manager ]
+      #      mode: replicated
+      #      replicas: 1
+      #      placement:
+      #        constraints: [ node.role == manager ]
       resources:
         limits:
           cpus: "0.5"
           memory: 512M
 
 volumes:
-  redis_data:
+  redis_storage:
     external: true
 
 networks:
-  app_network:
+  redis_network:
     external: true
-
