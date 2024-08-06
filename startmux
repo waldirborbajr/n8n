@@ -12,8 +12,8 @@ small() {
   tmux -u new-window -t $SESSION_NAME:1 -n "ngrok"
   tmux send-keys -t $SESSION_NAME:1 'ngrok http 5678' C-m
 
-  tmux -u new-window -t $SESSION_NAME:2 -n "redis"
-  tmux send-keys -t $SESSION_NAME:2 'sleep 6 && ./n8n-compose' C-m
+  tmux -u new-window -t $SESSION_NAME:2 -n "n8n"
+  tmux send-keys -t $SESSION_NAME:2 'sleep 20 && ./n8n-compose' C-m
 
   # tmux -u new-window -t $SESSION_NAME:3 -n "postgresql"
   # tmux send-keys -t $SESSION_NAME:3 'docker run \

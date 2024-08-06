@@ -1,0 +1,41 @@
+### Instalação Evolution V2 ###
+
+sudo apt-get update ; apt-get install -y apparmor-utils
+
+hostnamectl set-hostname manager1
+
+Altera localhost para
+
+nano /etc/hosts
+
+127.0.0.1 manager1
+
+curl -fsSL https://get.docker.com | bash
+
+docker swarm init
+
+docker network create --driver=overlay network_public
+
+nano traefik.yaml
+
+docker stack deploy --prune --resolve-image always -c traefik.yaml traefik
+
+
+Instalação portainer
+
+nano portainer.yaml
+
+docker stack deploy --prune --resolve-image always -c portainer.yaml portainer
+
+
+
+### Documentação API ###
+
+https://www.postman.com/agenciadgcode/evolution-api/collection/gqr041s/evolution-api-v2-0-7-release-candidate
+
+### Repositorio Docker Hub ####
+
+https://hub.docker.com/r/atendai/evolution-api/tags
+
+
+

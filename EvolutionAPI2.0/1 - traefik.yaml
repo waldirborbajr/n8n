@@ -3,13 +3,13 @@ version: "3.7"
 services:
 
   traefik:
-    image: traefik:latest
+    image: traefik:2.11.2
     command:
       - "--api.dashboard=true"
       - "--providers.docker.swarmMode=true"
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=minha_rede"
+      - "--providers.docker.network=network_public"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
@@ -17,7 +17,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsencryptresolver.acme.email=astraonlineweb@gmail.com"
+      - "--certificatesresolvers.letsencryptresolver.acme.email=machineteste24@gmail.com"
       - "--certificatesresolvers.letsencryptresolver.acme.storage=/etc/traefik/letsencrypt/acme.json"
       - "--log.level=DEBUG"
       - "--log.format=common"
@@ -47,7 +47,7 @@ services:
         published: 443
         mode: host
     networks:
-      - minha_rede
+      - network_public
 
 volumes:
 
@@ -59,8 +59,7 @@ volumes:
     name: volume_swarm_certificates
 
 networks:
-
-  minha_rede:
+  network_public:
     external: true
-    name: minha_rede
+    name: network_public
 

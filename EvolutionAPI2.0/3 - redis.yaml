@@ -13,11 +13,12 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - minha_rede
+      - network_public
     deploy:
       placement:
         constraints:
           - node.role == manager
+          #- node.hostname == worker1
       resources:
         limits:
           cpus: "0.5"
@@ -29,6 +30,6 @@ volumes:
     name: redis_data
 
 networks:
-  minha_rede:
+  network_public:
     external: true
-    name: minha_rede
+    name: network_public
