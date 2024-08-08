@@ -40,6 +40,7 @@ x-shared: &shared
     - N8N_QUEUE_HOST=redis
     - N8N_QUEUE_PORT=6379
     - N8N_QUEUE_NAME=n8n
+    - N8N_COMMUNITY_PACKAGES_ENABLED=true
   links:
     - postgres
     - redis
