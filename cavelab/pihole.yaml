@@ -4,19 +4,26 @@ services:
     image: pihole/pihole:latest
     hostname: pihole
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
+      - "192.168.1.19:53:53/tcp"
+      - "192.168.1.19:53:53/udp"
+      - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
       - "8282:82/tcp"
     environment:
       TZ: 'America/Sao_Paulo'
       PIHOLE_DNS_: '127.0.0.1;1.1.1.1;1.0.0.1'
       WEB_PORT: 82
-      # - WEBPASSWORD=xxxxxx
+      # WEBPASSWORD: 'xxxxxx'
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+      - 1.0.0.1
+    # Volumes store your data between container upgrades
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
-      # - pihole_storage:/etc/resolv.conf
+      - './var-log/pihole.log:/var/log/pihole.log'
+    # Recommended but not required (DHCP needs NET_ADMIN)
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
@@ -24,4 +31,4 @@ services:
 volumes:
   pihole_storage:
     name: pihole_storage
-    external: true
+    external: true    
