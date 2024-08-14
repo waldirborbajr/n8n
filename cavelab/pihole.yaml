@@ -9,13 +9,19 @@ services:
       - "67:67/udp"
       - "8282:82/tcp"
     environment:
-      - TZ='America/Sao_Paulo'
-      - PIHOLE_DNS_='127.0.0.1;1.1.1.1;1.0.0.1'
-      - WEB_PORT=82
-      # - WEBPASSWORD=xptoXPTOxpto
+      TZ: 'America/Sao_Paulo'
+      PIHOLE_DNS_: '127.0.0.1;1.1.1.1;1.0.0.1'
+      WEB_PORT: 82
+      # - WEBPASSWORD=xxxxxx
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
+      # - pihole_storage:/etc/resolv.conf
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+
+volumes:
+  pihole_storage:
+    name: pihole_storage
+    external: true
