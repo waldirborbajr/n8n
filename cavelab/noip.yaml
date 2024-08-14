@@ -1,0 +1,18 @@
+services:
+  noip:
+    image: ghcr.io/noipcom/noip-duc:latest
+    container_name: noip
+    hostname: noip
+    restart: unless-stopped
+    networks:
+      - noip_network    
+    environment:
+      NOIP_USERNAME: $NOIPUSER
+      NOIP_PASSWORD: $NOIPPWD
+      NOIP_HOSTNAMES: $NOIPDOMAIN
+      TZ: America/Sao_Paulo
+      
+networks:
+  noip_network:
+    name: noip_network
+    external: true
