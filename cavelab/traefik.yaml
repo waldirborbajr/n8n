@@ -39,14 +39,7 @@ services:
       - traefik.http.routers.mydashboard.entrypoints=websecure
       - "traefik.http.routers.mydashboard.rule=Host(`traefik.bplus.lab`)"
       - traefik.http.routers.mydashboard.service=api@internal
-      
-      # - traefik.enable=true
-      # - traefik.http.routers.traefik.rule=Host(`traefik.bplus.lab`) || Host(`www.traefik.bplus.lab`)
-      # - traefik.http.services.traefik.loadbalancer.server.port=8080
 
-      # - traefik.http.middlewares.redirect.redirectregex.regex=^https://www\.(.*)
-      # - traefik.http.middlewares.redirect.redirectregex.replacement=https://$${1}
-      # - traefik.http.routers.traefik.middlewares=redirect
 
 networks:
   bplus_network:

@@ -17,12 +17,10 @@ services:
     restart: unless-stopped
     labels:
       - traefik.enable=true
-      - traefik.http.routers.heimdall.rule=Host(`heimdall.bplus.lab`) || Host(`www.heimdall.bplus.lab`)
-      - traefik.http.services.heimdall.loadbalancer.server.port=80
-
-      - traefik.http.middlewares.redirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.redirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.heimdall.middlewares=redirect
+      - traefik.http.routers.heimdall.entrypoints=websecure
+      - traefik.http.routers.heimdall.service=mobiliquest
+      - "traefik.http.routers.heimdall.rule=Host(`heimdall.bplus.lab`)"
+      -  traefik.http.services.heimdall.loadbalancer.server.port=80
       
 networks:
   bplus_network:
