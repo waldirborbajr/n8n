@@ -10,7 +10,7 @@ services:
       - "8282:82/tcp"
     environment:
       TZ: 'America/Sao_Paulo'
-      PIHOLE_DNS_: '127.0.0.1;1.1.1.1;1.0.0.1'
+      PIHOLE_DNS_: 1.1.1.1;1.0.0.1
       WEB_PORT: 82
       # WEBPASSWORD: 'xxxxxx'
     dns:
@@ -31,4 +31,4 @@ services:
 volumes:
   pihole_storage:
     name: pihole_storage
-    external: true    
+    external: true
