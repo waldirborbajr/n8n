@@ -1,0 +1,32 @@
+services:
+  homarr:
+    container_name: homarr
+    hostname: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    restart: unless-stopped
+    environment:
+      TZ: America/Sao_Paulo
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+      BASE_URL: homarr.bplus.lab
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - ./homarr/configs:/app/data/configs
+      - ./homarr/icons:/app/public/icons
+      - ./homarr/data:/data
+    # ports:
+    #   - '7575:7575'
+    networks:
+      - bplus_network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homarr.rule=Host(`homarr.bplus.lab`) || Host(`www.homarr.bplus.lab`)
+      - traefik.http.services.homarr.loadbalancer.server.port=7575
+
+      - traefik.http.middlewares.redirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.redirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.homarr.middlewares=redirect
+      
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true

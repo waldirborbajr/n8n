@@ -4,19 +4,27 @@ services:
     container_name: heimdall
     hostname: heimdall
     networks:
-      - heimdall_network    
+      - bplus_network
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
-      - ${PWD}/config:/config
-    ports:
-      - 80:80
-      - 443:443
+      - ./config:/config
+    # ports:
+    #   - 80:80
+    #   - 443:443
     restart: unless-stopped
-    
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.heimdall.rule=Host(`heimdall.bplus.lab`) || Host(`www.heimdall.bplus.lab`)
+      - traefik.http.services.heimdall.loadbalancer.server.port=80
+
+      - traefik.http.middlewares.redirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.redirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.heimdall.middlewares=redirect
+      
 networks:
-  heimdall_network:
-    name: heimdall_network
+  bplus_network:
+    name: bplus_network
     external: true

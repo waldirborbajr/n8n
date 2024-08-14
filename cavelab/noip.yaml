@@ -5,14 +5,14 @@ services:
     hostname: noip
     restart: unless-stopped
     networks:
-      - noip_network    
+      - bplus_network    
     environment:
-      NOIP_USERNAME: $NOIPUSER
-      NOIP_PASSWORD: $NOIPPWD
-      NOIP_HOSTNAMES: $NOIPDOMAIN
+      NOIP_USERNAME: xxx
+      NOIP_PASSWORD: xxxx
+      NOIP_HOSTNAMES:  xxx
       TZ: America/Sao_Paulo
       
 networks:
-  noip_network:
-    name: noip_network
+  bplus_network:
+    name: bplus_network
     external: true

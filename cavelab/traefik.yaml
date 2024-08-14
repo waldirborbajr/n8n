@@ -1,0 +1,54 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    hostname: traefik
+    restart: unless-stopped
+    networks:
+      bplus_network:
+    environment:
+      TZ: 'America/Sao_Paulo'
+    ports:
+      - 80:80
+      - 443:443
+      # - 8080:8080      
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+      - /var/log:/var/log
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - --api.dashboard=true
+      - --log.level=INFO
+      #- --log.filepath=/var/log/traefik.log
+      - --accesslog=true
+      #- --accesslog.filepath=/var/log/traefik-access.log
+      - --providers.docker.network=proxy
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entryPoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls.certresolver=myresolver
+      - --certificatesresolvers.myresolver.acme.email=wborbajr@gmail.com
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mydashboard.entrypoints=websecure
+      - "traefik.http.routers.mydashboard.rule=Host(`traefik.bplus.lab`)"
+      - traefik.http.routers.mydashboard.service=api@internal
+      
+      # - traefik.enable=true
+      # - traefik.http.routers.traefik.rule=Host(`traefik.bplus.lab`) || Host(`www.traefik.bplus.lab`)
+      # - traefik.http.services.traefik.loadbalancer.server.port=8080
+
+      # - traefik.http.middlewares.redirect.redirectregex.regex=^https://www\.(.*)
+      # - traefik.http.middlewares.redirect.redirectregex.replacement=https://$${1}
+      # - traefik.http.routers.traefik.middlewares=redirect
+
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true

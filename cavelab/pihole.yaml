@@ -7,11 +7,11 @@ services:
       - "192.168.1.19:53:53/tcp"
       - "192.168.1.19:53:53/udp"
       - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
-      - "8282:82/tcp"
+      # - "8282:82/tcp"
     environment:
       TZ: 'America/Sao_Paulo'
       PIHOLE_DNS_: 1.1.1.1;1.0.0.1
-      WEB_PORT: 82
+      WEB_PORT: 8282
       # WEBPASSWORD: 'xxxxxx'
     dns:
       - 127.0.0.1
@@ -27,8 +27,23 @@ services:
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+    networks:
+      - bplus_network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pihole.rule=Host(`pihole.bplus.lab`) || Host(`www.pihole.bplus.lab`)
+      - traefik.http.services.pihole.loadbalancer.server.port=8282
+
+      - traefik.http.middlewares.redirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.redirect.redirectregex.replacement=https://$${1}
+      - traefik.http.routers.pihole.middlewares=redirect
 
 volumes:
   pihole_storage:
     name: pihole_storage
+    external: true    
+
+networks:
+  bplus_network:
+    name: bplus_network
     external: true
