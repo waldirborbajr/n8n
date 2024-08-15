@@ -1,0 +1,35 @@
+# Video de Instruções:
+
+>>>>  https://youtu.be/XmUewsMQMqQ
+
+# Navegue ate a pasta opt
+
+cd /opt
+
+# Clone o respositorio o GitHub
+
+git clone https://github.com/launcherbr/whaticketsaas.git whaticket
+
+# Navegue ate a pasta do repositorio clonado
+
+cd /opt/whaticket
+
+# Depois de copier o conteudo da pasta backend e da pasta frontend para os seus respectivos locais faça a Build da imagem do docker
+
+docker compose build
+
+# Agora abra o seu Portainer, Dentro do Portainer Crie a Rede whaticket
+
+# Ainda no Portainer, copie o conteudo do docker-compose.yml para a stack que voce esta criando no Portainer e cole o conteudo, edite as urls e as senhas conforme a sua nescessidade.
+
+# Tendo a Certeza que tudo esta devidamente editado voce pode clicar em deploy the stack e esperar o processso terminar.
+
+# URL Padrão
+
+seusubdominio.seudominio.com.br/login
+
+# Usuario e senha padrão
+
+Usuario: admin@admin.com
+
+Senha: 123456

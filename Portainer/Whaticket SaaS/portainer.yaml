@@ -1,0 +1,129 @@
+services:
+  whaticket_backend:
+    image: whaticket-backend:latest
+    depends_on:
+      - postgres_whaticket
+      - whaticket_redis
+    environment:
+      # POSTGRES
+      - DB_DIALECT=postgres
+      - DB_HOST=postgres_whaticket
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=12345 # Configure sua senha do Postgres
+      - DB_NAME=whaticket
+      - TZ=America/Sao_Paulo
+
+      # BACKEND
+      - JWT_SECRET=kZaOTd+YZpjRUyyuQUpigJaEMk4vcW4YOymKPZX0Ts8= # Configure seu segredo JWT
+      - JWT_REFRESH_SECRET=dBSXqFg9TaNUEDXVp6fhMTRLBysP+j2DSqf7+raxD3A= # Configure seu refresh do segredo JWT
+      - PORT=3000
+      - PROXY_PORT=443
+      - BACKEND_URL=https://apiwhaticket.fabricandocursos.com.br # Configure sua url do backend
+      - FRONTEND_URL=https://whaticket.fabricandocursos.com.br # Configure sua url do frontend
+      - CHROME_ARGS=--no-sandbox --disable-setuid-sandbox
+
+      # REDIS
+      - REDIS_URI=redis://:12345@whaticket_redis:6379 # Configure sua senha do Redis(12345)
+      - REDIS_OPT_LIMITER_MAX=1
+      - REDIS_OPT_LIMITER_DURATION=3000
+
+      # GERENCIANET(SOMENTE PARA CONFIGURAR PAGAMENTOS)
+      - GERENCIANET_SANDBOX=false
+      - GERENCIANET_CLIENT_ID=
+      - GERENCIANET_CLIENT_SECRET=
+      - GERENCIANET_PIX_CERT=
+      - GERENCIANET_PIX_KEY=
+
+      # USER LIMIT
+      - USER_LIMIT=10000
+      - CONNECTIONS_LIMIT=100000
+      - CLOSED_SEND_BY_ME=true
+
+      # MAIL
+      - MAIL_HOST=smtp.hostinger.com # Configure seu servidor SMTP
+      - MAIL_USER=contato@seusite.com # Configure seu email
+      - MAIL_PASS=senha # Configure sua senha
+      - MAIL_FROM=Recuperar Senha <contato@seusite.com> # Configure o remetente
+      - MAIL_PORT=465 # Configure a porta STMP
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whaticket_backend.rule=Host(`apiwhaticket.fabricandocursos.com.br`)" # Configure sua url do backend
+      - "traefik.http.routers.whaticket_backend.entrypoints=websecure"
+      - "traefik.http.routers.whaticket_backend.tls.certresolver=leresolver"
+      - "traefik.http.middlewares.cors_backend.headers.accessControlAllowOriginList=https://whaticket.fabricandocursos.com.br" # Configure sua url do frontend(Leve em consideração outras origens para integrações)
+      - "traefik.http.middlewares.cors_backend.headers.accessControlAllowMethods=GET,HEAD,PUT,PATCH,POST,DELETE"
+      - "traefik.http.middlewares.cors_backend.headers.accessControlAllowHeaders=Origin, X-Requested-With, Content-Type, Accept, Authorization"
+      - "traefik.http.middlewares.cors_backend.headers.accessControlAllowCredentials=true"
+      - "traefik.http.middlewares.backend_headers.headers.customResponseHeaders.X-Frame-Options=SAMEORIGIN"
+      - "traefik.http.middlewares.backend_headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+      - "traefik.http.middlewares.backend_headers.headers.customResponseHeaders.X-XSS-Protection=1; mode=block"
+      - "traefik.http.middlewares.backend_headers.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubdomains;"
+      - "traefik.http.middlewares.backend_headers.headers.customResponseHeaders.Referrer-Policy=no-referrer-when-downgrade"
+      - "traefik.http.middlewares.backend_headers.headers.customResponseHeaders.Cache-Control=no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+      - "traefik.http.middlewares.backend_compress.compress=true"
+      - "traefik.http.middlewares.backend_body_size.buffering.maxRequestBodyBytes=20971520" # Arquivo máximo configurado para 20 MB
+      - "traefik.http.services.whaticket_backend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.whaticket_backend.middlewares=cors_backend@docker,backend_headers@docker,backend_compress@docker,backend_body_size@docker"
+    volumes:
+      - ./backend/public/:/usr/src/app/public/
+    restart: always
+    networks:
+      - whaticket
+
+  whaticket_frontend:
+    image: whaticket-frontend:latest
+    depends_on:
+      - whaticket_backend
+    environment:
+      - BACKEND_URL=https://apiwhaticket.fabricandocursos.com.br # Configure sua url do backend
+      - REACT_APP_BACKEND_URL=https://apiwhaticket.fabricandocursos.com.br # Configure sua url do backend
+      - REACT_APP_HOURS_CLOSE_TICKETS_AUTO=24
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whaticket_frontend.rule=Host(`whaticket.fabricandocursos.com.br`)" # Configure sua url do frontend
+      - "traefik.http.routers.whaticket_frontend.entrypoints=websecure"
+      - "traefik.http.routers.whaticket_frontend.tls.certresolver=leresolver"
+      - "traefik.http.middlewares.frontend_headers.headers.customResponseHeaders.X-Frame-Options=SAMEORIGIN"
+      - "traefik.http.middlewares.frontend_headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+      - "traefik.http.middlewares.frontend_headers.headers.customResponseHeaders.X-XSS-Protection=1; mode=block"
+      - "traefik.http.middlewares.frontend_headers.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubdomains;"
+      - "traefik.http.middlewares.frontend_headers.headers.customResponseHeaders.Referrer-Policy=no-referrer-when-downgrade"
+      - "traefik.http.middlewares.frontend_headers.headers.customResponseHeaders.Cache-Control=no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+      - "traefik.http.middlewares.frontend_compress.compress=true"
+      - "traefik.http.middlewares.frontend_body_size.buffering.maxRequestBodyBytes=20971520" # Arquivo máximo configurado para 20 MB
+      - "traefik.http.services.whaticket_frontend.loadbalancer.server.port=3250"
+      - "traefik.http.routers.whaticket_frontend.middlewares=frontend_headers@docker,frontend_compress@docker,frontend_body_size@docker"
+    restart: always
+    networks:
+      - whaticket
+
+  postgres_whaticket:
+    image: postgres:13
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=whaticket
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345 # Configure sua senha do Postgres
+      - TZ=America/Sao_Paulo
+    restart: always
+    networks:
+      - whaticket
+
+  whaticket_redis:
+    image: redis:latest
+    command: redis-server --requirepass "12345" # Configure sua senha do Redis
+    volumes:
+      - redis-data:/data
+    restart: always
+    networks:
+      - whaticket
+
+networks:
+  whaticket:
+    external: true
+
+volumes:
+  postgres-data:
+  redis-data:

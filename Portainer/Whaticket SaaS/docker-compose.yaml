@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  whaticket_backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    image: whaticket-backend:latest
+    environment:
+      - DB_DIALECT=${DB_DIALECT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - TZ=${TZ}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - PORT=${PORT}
+      - PROXY_PORT=${PROXY_PORT}
+      - BACKEND_URL=${BACKEND_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - CHROME_ARGS=${CHROME_ARGS}
+      - REDIS_URI=${REDIS_URI}
+      - REDIS_OPT_LIMITER_MAX=${REDIS_OPT_LIMITER_MAX}
+      - REDIS_OPT_LIMITER_DURATION=${REDIS_OPT_LIMITER_DURATION}
+      - GERENCIANET_SANDBOX=${GERENCIANET_SANDBOX}
+      - GERENCIANET_CLIENT_ID=${GERENCIANET_CLIENT_ID}
+      - GERENCIANET_CLIENT_SECRET=${GERENCIANET_CLIENT_SECRET}
+      - GERENCIANET_PIX_CERT=${GERENCIANET_PIX_CERT}
+      - GERENCIANET_PIX_KEY=${GERENCIANET_PIX_KEY}
+      - USER_LIMIT=${USER_LIMIT}
+      - CONNECTIONS_LIMIT=${CONNECTIONS_LIMIT}
+      - CLOSED_SEND_BY_ME=${CLOSED_SEND_BY_ME}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASS=${MAIL_PASS}
+      - MAIL_FROM=${MAIL_FROM}
+      - MAIL_PORT=${MAIL_PORT}
+
+  whaticket_frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    image: whaticket-frontend:latest
+    environment:
+      - BACKEND_URL=${BACKEND_URL}
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+      - REACT_APP_HOURS_CLOSE_TICKETS_AUTO=${REACT_APP_HOURS_CLOSE_TICKETS_AUTO}

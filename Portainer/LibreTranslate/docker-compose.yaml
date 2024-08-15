@@ -1,0 +1,40 @@
+services:
+  libretranslate:
+    restart: always
+    container_name: libretranslate
+    image: libretranslate/libretranslate
+    networks:
+      - libretranslate
+    ## Remova o comentário para fazer login nos logs do docker compose
+    # tty: true
+    healthcheck:
+      test: ['CMD-SHELL', './venv/bin/python scripts/healthcheck.py']     
+    ## Remova o comentário do comando acima e defina seus argumentos, se necessário
+    # comando: --ssl --ga-id MY-GA-ID --req-limit 100 --char-limit 500
+    ## Remova o comentário desta seção e do volume libretranslate_api_keys se desejar fazer backup de suas chaves de API
+    environment:
+       - LT_API_KEYS=true
+       - LT_HOST=libretranslate.fabricandocursos.com.br #Troque pelo seu domínio
+       - LT_API_KEYS_DB_PATH=/app/db/api_keys.db # Same result as `db/api_keys.db` or `./db/api_keys.db`
+    ## Remova o comentário desses volumes vars e libretranslate_models para otimizar o tempo de carregamento.
+       - LT_UPDATE_MODELS=true
+       - LT_LOAD_ONLY=en,fr,pt
+    volumes:
+       - libretranslate_api_keys:/app/db
+    # Mantenha os modelos em um volume docker, para evitar novos downloads na inicialização
+       - libretranslate_models:/home/libretranslate/.local:rw
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.libretranslate.rule=Host(`libretranslate.seusite.com.br`)" #Troque pelo seu domínio
+      - "traefik.http.services.libretranslate.loadbalancer.server.port=5000"
+      - "traefik.http.routers.libretranslate.entrypoints=websecure"
+      - "traefik.http.routers.libretranslate.tls.certresolver=leresolver"
+      - "traefik.http.routers.libretranslate.service=libretranslate"
+
+networks:
+  libretranslate:
+    external: true
+
+volumes:
+  libretranslate_api_keys:
+  libretranslate_models:

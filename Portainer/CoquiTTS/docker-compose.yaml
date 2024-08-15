@@ -1,0 +1,26 @@
+# Se Inscreva no Canal: https://www.youtube.com/@fabricandosuaideiatutoriais
+services:
+  tts-inference-cpu:
+    image: ghcr.io/coqui-ai/tts-cpu  # Alterada para a versão CPU
+    stdin_open: true  # equivalente a '-i'
+    tty: true         # equivalente a '-t'
+    entrypoint: /bin/bash
+    command: -c "python3 TTS/server/server.py --model_name tts_models/en/vctk/vits"
+
+    networks:
+      - coquitts
+    volumes:
+      - tts-output-cpu:/root/tts-output
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.coquitts.rule=Host(`coquitts.fabricandocursos.com.br`)" # Troque pelo seu dominio ou subdominio
+      - "traefik.http.routers.coquitts.entrypoints=web,websecure"
+      - "traefik.http.routers.coquitts.tls.certresolver=leresolver"
+      - "traefik.http.services.coquitts.loadbalancer.server.port=5002"
+volumes:
+  tts-output-cpu:
+
+networks:
+  coquitts:
+    external: true

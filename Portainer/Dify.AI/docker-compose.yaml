@@ -1,0 +1,446 @@
+# Se Inscreva em Nosso Canal https://www.youtube.com/@fabricandosuaideiatutoriais
+
+x-shared-env: &shared-api-worker-env
+  LOG_LEVEL: INFO
+  DEBUG: false
+  FLASK_DEBUG: false
+  SECRET_KEY: sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U
+  INIT_PASSWORD: 123456  # Senha inicial.
+  CONSOLE_WEB_URL: https://dify.seusite.com.br  # URL do console web.
+  CONSOLE_API_URL: https://apidify.seusite.com.br  # URL da API do console.
+  SERVICE_API_URL: https://apidify.seusite.com.br  # URL do serviço da API.
+  APP_WEB_URL: https://dify.seusite.com.br  # URL da aplicação web.
+  CHECK_UPDATE_URL: https://updates.dify.ai
+  OPENAI_API_BASE: https://api.openai.com
+  FILES_ACCESS_TIMEOUT: 300
+  APP_MAX_ACTIVE_REQUESTS: 0
+  MIGRATION_ENABLED: true
+  DEPLOY_ENV: PRODUCTION
+  DIFY_BIND_ADDRESS: 0.0.0.0
+  DIFY_PORT: 5001
+  GUNICORN_TIMEOUT: 360
+  API_TOOL_DEFAULT_CONNECT_TIMEOUT: 10
+  API_TOOL_DEFAULT_READ_TIMEOUT: 60
+  DB_USERNAME: postgres
+  DB_PASSWORD: difyai123456 
+  DB_HOST: dify_db
+  DB_PORT: 5432
+  DB_DATABASE: dify
+  SQLALCHEMY_POOL_SIZE: 30
+  SQLALCHEMY_POOL_RECYCLE: 3600
+  SQLALCHEMY_ECHO: false
+  REDIS_HOST: dify_redis
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: difyai123456
+  CELERY_BROKER_URL: redis://:difyai123456@dify_redis:6379/1
+  BROKER_USE_SSL: false
+  WEB_API_CORS_ALLOW_ORIGINS: https://dify.seusite.com.br,https://apidify.seusite.com.br  # URLs permitidas para CORS, INCLUIR INTEGRAÇÕES.
+  CONSOLE_CORS_ALLOW_ORIGINS: https://dify.seusite.com.br,https://apidify.seusite.com.br  # URLs permitidas para CORS no console, INCLUIR INTEGRAÇÕES.
+  STORAGE_TYPE: S3
+  STORAGE_LOCAL_PATH: storage
+  S3_ENDPOINT: https://s3.seusite.com.br  # Endpoint do S3.
+  S3_BUCKET_NAME: difyai  # Deve ser criado no console do Minio e setado como public.
+  S3_ACCESS_KEY: lbRLQ8LgFPGn4PfzqkE2  # Deve ser gerada no console do Minio.
+  S3_SECRET_KEY: TSWLED6rL4W4TAVxAO5pVjrtYsc4DLgpPvlFLIiA  # Deve ser gerada no console do Minio.
+  S3_REGION: us-east-1
+  MAIL_TYPE: smtp
+  MAIL_DEFAULT_SEND_FROM: Seu Nome <aula@seusite.com.br> # Endereço de email válido.
+  SMTP_SERVER: smtp.hostinger.com # Servidor SMTP.
+  SMTP_PORT: 465 # Porta SMTP.
+  SMTP_USERNAME: aula@seusite.com.br # Endereço de email válido.
+  SMTP_PASSWORD: "" # Senha do email.
+  SMTP_USE_TLS: true # Usar TLS.
+  SMTP_OPPORTUNISTIC_TLS: false
+  INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH: 1000
+  INVITE_EXPIRY_HOURS: 72
+  RESET_PASSWORD_TOKEN_EXPIRY_HOURS: 24
+  CODE_EXECUTION_ENDPOINT: http://dify_sandbox:8194
+  CODE_EXECUTION_API_KEY: fu89389oiasdj0983r33
+  CODE_MAX_NUMBER: 9223372036854775807
+  CODE_MIN_NUMBER: -9223372036854775808
+  CODE_MAX_STRING_LENGTH: 80000
+  TEMPLATE_TRANSFORM_MAX_LENGTH: 80000
+  CODE_MAX_STRING_ARRAY_LENGTH: 30
+  CODE_MAX_OBJECT_ARRAY_LENGTH: 30
+  CODE_MAX_NUMBER_ARRAY_LENGTH: 1000
+  VECTOR_STORE: qdrant
+  WEAVIATE_ENDPOINT: http://weaviate:8080
+  WEAVIATE_API_KEY: WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+  QDRANT_URL: http://qdrant:6333
+  QDRANT_API_KEY: difyai123456
+  QDRANT_CLIENT_TIMEOUT: 20
+  QDRANT_GRPC_ENABLED: false
+  QDRANT_GRPC_PORT: 6334
+  PGVECTOR_HOST: pgvector
+  PGVECTOR_PORT: 5432
+  PGVECTOR_USER: postgres
+  PGVECTOR_PASSWORD: difyai123456
+  PGVECTOR_DATABASE: dify
+  CHROMA_HOST: chroma
+  CHROMA_PORT: 8000
+  CHROMA_TENANT: default_tenant
+  CHROMA_DATABASE: default_database
+  CHROMA_AUTH_PROVIDER: chromadb.auth.token_authn.TokenAuthClientProvider
+  CHROMA_AUTH_CREDENTIALS: difyai123456
+  ORACLE_HOST: oracle
+  ORACLE_PORT: 1521
+  ORACLE_USER: dify
+  ORACLE_PASSWORD: dify
+  ORACLE_DATABASE: FREEPDB1
+  MILVUS_HOST: milvus_standalone
+  MILVUS_PORT: 19530
+  MILVUS_USER: root
+  MILVUS_PASSWORD: Milvus
+  MILVUS_SECURE: false
+  OPENSEARCH_HOST: opensearch
+  OPENSEARCH_PORT: 9200
+  OPENSEARCH_USER: admin
+  OPENSEARCH_PASSWORD: admin
+  OPENSEARCH_SECURE: true
+  MYSCALE_HOST: myscale
+  MYSCALE_PORT: 8123
+  MYSCALE_USER: default
+  MYSCALE_DATABASE: dify
+  UNSTRUCTURED_API_URL: http://unstructured:8080
+  NGINX_HTTPS_ENABLED: false
+  NGINX_ENABLE_CERTBOT_CHALLENGE: false
+
+services:
+  dify_api:
+    image: langgenius/dify-api:0.6.16
+    restart: always
+    environment:
+      <<: *shared-api-worker-env
+      MODE: api
+    depends_on:
+      - dify_db
+      - dify_redis
+    volumes:
+      - ./volumes/app/storage:/app/api/storage
+    networks:
+      - dify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dify-api.rule=Host(`apidify.seusite.com.br`) && (PathPrefix(`/console/api`) || PathPrefix(`/api`) || PathPrefix(`/v1`) || PathPrefix(`/files`))" # URL da API.
+      - "traefik.http.routers.dify-api.entrypoints=web,websecure"
+      - "traefik.http.routers.dify-api.tls.certresolver=leresolver"
+      - "traefik.http.middlewares.cors_dify_api.headers.accessControlAllowOriginList=https://dify.seusite.com.br,https://apidify.seusite.com.br" # URL da API e Console + Suas Integrações.
+      - "traefik.http.middlewares.cors_dify_api.headers.accessControlAllowMethods=GET,HEAD,PUT,PATCH,POST,DELETE"
+      - "traefik.http.middlewares.cors_dify_api.headers.accessControlAllowHeaders=Origin, X-Requested-With, Content-Type, Accept, Authorization"
+      - "traefik.http.middlewares.cors_dify_api.headers.accessControlAllowCredentials=true"
+      - "traefik.http.middlewares.cors_dify_api.headers.customResponseHeaders.X-Frame-Options=SAMEORIGIN"
+      - "traefik.http.middlewares.cors_dify_api.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+      - "traefik.http.middlewares.cors_dify_api.headers.customResponseHeaders.X-XSS-Protection=1; mode=block"
+      - "traefik.http.middlewares.cors_dify_api.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubdomains;"
+      - "traefik.http.middlewares.cors_dify_api.headers.customResponseHeaders.Referrer-Policy=no-referrer-when-downgrade"
+      - "traefik.http.middlewares.cors_dify_api.headers.customResponseHeaders.Cache-Control=no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+      - "traefik.http.services.dify-api.loadbalancer.server.port=5001"
+      - "traefik.http.routers.dify-api.middlewares=cors_dify_api@docker"
+
+  dify_worker:
+    image: langgenius/dify-api:0.6.16
+    restart: always
+    environment:
+      <<: *shared-api-worker-env
+      MODE: worker
+    depends_on:
+      - dify_db
+      - dify_redis
+    volumes:
+      - ./volumes/app/storage:/app/api/storage
+    networks:
+      - dify
+
+  dify_web:
+    image: langgenius/dify-web:0.6.16
+    restart: always
+    environment:
+      CONSOLE_API_URL: https://apidify.seusite.com.br  # Deve ser igual à variável CONSOLE_API_URL.
+      APP_API_URL: https://apidify.seusite.com.br  # Deve ser igual à variável SERVICE_API_URL.
+      NGINX_HTTPS_ENABLED: false
+      NGINX_ENABLE_CERTBOT_CHALLENGE: false
+    networks:
+      - dify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dify-web.rule=Host(`dify.seusite.com.br`)" # URL do Console.
+      - "traefik.http.routers.dify-web.entrypoints=web,websecure"
+      - "traefik.http.routers.dify-web.tls.certresolver=leresolver"
+      - "traefik.http.middlewares.cors_dify_web.headers.accessControlAllowMethods=GET,HEAD,PUT,PATCH,POST,DELETE"
+      - "traefik.http.middlewares.cors_dify_web.headers.accessControlAllowHeaders=Origin, X-Requested-With, Content-Type, Accept, Authorization"
+      - "traefik.http.middlewares.cors_dify_web.headers.accessControlAllowCredentials=true"
+      - "traefik.http.middlewares.cors_dify_web.headers.customResponseHeaders.X-Frame-Options=SAMEORIGIN"
+      - "traefik.http.middlewares.cors_dify_web.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+      - "traefik.http.middlewares.cors_dify_web.headers.customResponseHeaders.X-XSS-Protection=1; mode=block"
+      - "traefik.http.middlewares.cors_dify_web.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubdomains;"
+      - "traefik.http.middlewares.cors_dify_web.headers.customResponseHeaders.Referrer-Policy=no-referrer-when-downgrade"
+      - "traefik.http.middlewares.cors_dify_web.headers.customResponseHeaders.Cache-Control=no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+      - "traefik.http.services.dify-web.loadbalancer.server.port=3000"
+      - "traefik.http.routers.dify-web.middlewares=cors_dify_web@docker"
+
+  dify_db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      PGUSER: postgres
+      POSTGRES_PASSWORD: difyai123456
+      POSTGRES_DB: dify
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./volumes/dify_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    networks:
+      - dify
+
+  dify_redis:
+    image: redis:6-alpine
+    restart: always
+    volumes:
+      - ./volumes/dify_redis:/data
+    command: redis-server --requirepass difyai123456
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    networks:
+      - dify
+
+  dify_sandbox:
+    image: langgenius/dify-sandbox:0.2.1
+    restart: always
+    environment:
+      API_KEY: fu89389oiasdj0983r33
+      GIN_MODE: release
+      WORKER_TIMEOUT: 15
+      ENABLE_NETWORK: true
+      SANDBOX_PORT: 8194
+    volumes:
+      - ./volumes/dify_sandbox:/dependencies
+    networks:
+      - dify
+    labels:
+      - "traefik.enable=false"
+
+  dify_minio:
+    image: quay.io/minio/minio:RELEASE.2024-03-26T22-10-45Z
+    restart: always
+    command: server /data --console-address ":9001"
+
+    networks:
+      - dify
+    volumes:
+      - dify_minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=oasdoijj90812aosdiaosd
+      - MINIO_BROWSER_REDIRECT_URL=https://minio.seusite.com.br # URL do console mino.
+      - MINIO_SERVER_URL=https://s3.seusite.com.br # URL do backend minio.
+      - MINIO_VOLUMES=/data
+      - CONSOLE_MINIO_SERVER=https://s3.seusite.com.br # URL do backend minio.
+      - MINIO_OPTS=--console-address=":9001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio_public.rule=Host(`s3.seusite.com.br`)" # URL do backend minio.
+      - "traefik.http.routers.minio_public.entrypoints=web,websecure"
+      - "traefik.http.routers.minio_public.tls.certresolver=leresolver"
+      - "traefik.http.services.minio_public.loadbalancer.server.port=9000"
+      - "traefik.http.services.minio_public.loadbalancer.passHostHeader=true"
+      - "traefik.http.routers.minio_public.service=minio_public"
+      - "traefik.http.routers.minio_console.rule=Host(`minio.seusite.com.br`)" # URL do console mino.
+      - "traefik.http.routers.minio_console.entrypoints=web,websecure"
+      - "traefik.http.routers.minio_console.tls.certresolver=leresolver"
+      - "traefik.http.services.minio_console.loadbalancer.server.port=9001"
+      - "traefik.http.services.minio_console.loadbalancer.passHostHeader=true"
+      - "traefik.http.routers.minio_console.service=minio_console"
+
+  weaviate:
+    image: semitechnologies/weaviate:1.19.0
+    restart: always
+    volumes:
+      - ./volumes/dify_weaviate:/var/lib/weaviate
+    environment:
+      PERSISTENCE_DATA_PATH: /var/lib/weaviate
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: false
+      DEFAULT_VECTORIZER_MODULE: none
+      CLUSTER_HOSTNAME: node1
+      AUTHENTICATION_APIKEY_ENABLED: true
+      AUTHENTICATION_APIKEY_ALLOWED_KEYS: WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+      AUTHENTICATION_APIKEY_USERS: aula@seusite.com.br # Mesmo Email do SMTP
+      AUTHORIZATION_ADMINLIST_ENABLED: true
+      AUTHORIZATION_ADMINLIST_USERS: aula@seusite.com.br # Mesmo Email do SMTP
+    networks:
+      - dify
+    labels:
+      - "traefik.enable=false"
+
+  qdrant:
+    image: langgenius/qdrant:v1.7.3
+    restart: always
+    volumes:
+      - ./volumes/dify_qdrant:/qdrant/storage
+    environment:
+      QDRANT_API_KEY: difyai123456
+    networks:
+      - dify
+
+  pgvector:
+    image: pgvector/pgvector:pg16
+    restart: always
+    environment:
+      PGUSER: postgres
+      POSTGRES_PASSWORD: difyai123456
+      POSTGRES_DB: dify
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./volumes/dify_pgvector:/var/lib/postgresql/data
+    networks:
+      - dify
+
+  pgvecto_rs:
+    image: tensorchord/pgvecto-rs:pg16-v0.3.0
+    restart: always
+    environment:
+      PGUSER: postgres
+      POSTGRES_PASSWORD: difyai123456
+      POSTGRES_DB: dify
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./volumes/dify_pgvecto_rs:/var/lib/postgresql/data
+    networks:
+      - dify
+
+  chroma:
+    image: ghcr.io/chroma-core/chroma:0.5.1
+    restart: always
+    volumes:
+      - ./volumes/dify_chroma:/chroma/chroma
+    environment:
+      CHROMA_SERVER_AUTHN_CREDENTIALS: difyai123456
+      CHROMA_SERVER_AUTHN_PROVIDER: chromadb.auth.token_authn.TokenAuthenticationServerProvider
+      IS_PERSISTENT: TRUE
+    networks:
+      - dify
+
+  oracle:
+    image: container-registry.oracle.com/database/free:latest
+    restart: always
+    volumes:
+      - type: volume
+        source: oradata
+        target: /opt/oracle/oradata
+      - ./startupscripts:/opt/oracle/scripts/startup
+    environment:
+      ORACLE_PWD: Dify123456
+      ORACLE_CHARACTERSET: AL32UTF8
+    networks:
+      - dify
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.5
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: 1000
+      ETCD_QUOTA_BACKEND_BYTES: 4294967296
+      ETCD_SNAPSHOT_COUNT: 50000
+    volumes:
+      - ./volumes/dify_etcd:/etcd
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    restart: always
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - dify
+
+  milvus_standalone:
+    image: milvusdb/milvus:v2.3.1
+    command: ["milvus", "run", "standalone"]
+    restart: always
+    environment:
+      ETCD_ENDPOINTS: http://dify_etcd:2379
+      MINIO_ADDRESS: http://dify_minio:9000
+      common.security.authorizationEnabled: false
+    volumes:
+      - ./volumes/dify_milvus_standalone:/var/lib/milvus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      start_period: 90s
+      timeout: 20s
+      retries: 3
+    depends_on:
+      - etcd
+      - dify_minio
+    networks:
+      - dify
+
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    restart: always
+    environment:
+      discovery.type: single-node
+      bootstrap.memory_lock: true
+      OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx1024m
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: Qazwsxedc!@#123
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - ./volumes/dify_opensearch/data:/usr/share/opensearch/data
+    networks:
+      - dify
+
+  opensearch_dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    command: >
+      sh -c "if [ ! -f /usr/share/opensearch-dashboards/config/opensearch_dashboards.yml ]; then
+                touch /usr/share/opensearch-dashboards/config/opensearch_dashboards.yml;
+                chmod 644 /usr/share/opensearch-dashboards/config/opensearch_dashboards.yml;
+             fi &&
+             opensearch-dashboards"
+    restart: always
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
+    volumes:
+      - opensearch_dashboards:/usr/share/opensearch-dashboards/config
+    networks:
+      - dify
+    depends_on:
+      - opensearch
+
+  myscale:
+    image: myscale/myscaledb:1.6
+    restart: always
+    tty: true
+    volumes:
+      - ./volumes/dify_myscale/data:/var/lib/clickhouse
+      - ./volumes/dify_myscale/log:/var/log/clickhouse-server
+      - ./volumes/dify_myscale/config/users.d/custom_users_config.xml:/etc/clickhouse-server/users.d/custom_users_config.xml
+    networks:
+      - dify
+
+  unstructured:
+    image: downloads.unstructured.io/unstructured-io/unstructured-api:latest
+    restart: always
+    volumes:
+      - ./volumes/dify_unstructured:/app/data
+    networks:
+      - dify
+
+networks:
+  dify:
+    external: true
+
+volumes:
+  dify_minio_data:
+  oradata:
+  opensearch_dashboards:
