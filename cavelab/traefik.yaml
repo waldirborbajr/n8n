@@ -19,6 +19,10 @@ services:
         published: 443
         protocol: tcp
         mode: host
+      # - target: 8080 # need to enable --api.insecure=true
+      #    published: 8085
+      #    protocol: tcp
+      #    mode: host  
       # - 80:80
       # - 443:443
       # - 8080:8080      
