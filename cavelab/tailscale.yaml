@@ -3,32 +3,32 @@ services:
     image: tailscale/tailscale:latest
     container_name: tailscale
     hostname: cavelab
+    restart: unless-stopped
+    networks:
+      - bplus_network
+    security_opt:
+      - no-new-privileges:true
     cap_add:
       - NET_ADMIN
       - NET_RAW
     devices:
       - /dev/net/tun
-    volumes:
-      - tailscale_storage:/var/lib/tailscale
     environment:
-      TS_AUTHKEY: tskey-auth-kPEbohV8pc11CNTRL-rZa7tGAVWaaepakYXyT6aaVi7kvkh55T
-      # TS_ROUTES: 192.168.1.9/32
-      TS_EXTRA_ARGS: --accept-routes
-      TS_STATE_DIR: /var/lib/tailscale
-      TS_USERSPACE: 'false'
-      TS_ACCEPT_DNS: 'false'
-      TZ: America/Sao_Paulo
-    # networks:
-    #   br0:
-        # ipv4_address: 192.168.1.5
-    restart: unless-stopped
-    networks:
-      - bplus_network
-    
+      # - TS_HOSTNAME=${TS_HOSTNAME} # Usually not necessary for your hostname to be the same name on the tailscale network
+      # - TS_AUTHKEY=${TS_AUTHKEY} # Generate auth keys here: https://login.tailscale.com/admin/settings/keys
+      # - TS_ROUTES=${TS_ROUTES} # Creates a subnet router for Tailscale. Use your subnet's CIDR in the form: 192.168.1.0/24
+      # - TS_ACCEPT_DNS=${TS_ACCEPT_DNS} # Set to false for Pi-hole Docker setups
+      - TS_SOCKET=/var/run/tailscale/tailscaled.sock # Specifying the /var/lib/tailscale/tailscaled.sock location allows use of standard Tailscale commands 
+      - TS_EXTRA_ARGS=--accept-routes # Add any other supported arguments in the docker commandline style: e.g. --advertise-exit-node
+      - TS_STATE_DIR=/var/lib/tailscale # Required to create a persistent container state that will survive reboots
+      - TZ= America/Sao_Paulo
+    volumes:
+      # - tailscale_storage:/var/lib/tailscale
+      - /data:/var/lib # Creates a tailscale directory under /data for persistence
+      - /dev/net/tun:/dev/net/tun
 volumes:
   tailscale_storage:
     external: true    
-
 networks:
   bplus_network:
     name: bplus_network

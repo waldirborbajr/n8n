@@ -4,12 +4,14 @@ services:
     container_name: noip
     hostname: noip
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true   
     networks:
       - bplus_network    
     environment:
-      NOIP_USERNAME: xxx
-      NOIP_PASSWORD: xxxx
-      NOIP_HOSTNAMES:  xxx
+      NOIP_USERNAME: wborbajr@gmail.com
+      NOIP_PASSWORD: (AmandaTB00)
+      NOIP_HOSTNAMES:  bpluslab.ddns.net
       TZ: America/Sao_Paulo
       
 networks:
