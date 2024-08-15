@@ -1,0 +1,47 @@
+services:
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
+    container_name: calibre
+    restart: unless-stopped
+    networks:
+      bplus_network:
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:unconfined #optional
+    volumes:
+      - ./calibre/config:/config
+    environment:
+      - TZ='America/Sao_Paulo'
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 8080:8080
+      - 8181:8181
+      - 8081:8081
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    hostname: calibre-web
+    restart: unless-stopped
+    networks:
+      bplus_network:
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./data:/config
+      - ./calibre/library:/books
+    environment:
+      - TZ='America/Sao_Paulo'
+      - PUID=1000
+      - PGID=1000
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    depends_on:
+      - calibre
+    ports:
+      - 8083:8083
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true
