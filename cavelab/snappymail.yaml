@@ -1,0 +1,21 @@
+services:
+  snappymail:
+    image: djmaze/snappymail:latest
+    container_name: snappymail
+    hostname: snappymail
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=America/Sao_Paulo
+    networks:
+      - bplus_network
+    restart: unless-stopped
+    volumes:
+      - ./data/:/snappymail/data/
+    ports:
+      - 8888:8888
+      - 9000:9000
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true

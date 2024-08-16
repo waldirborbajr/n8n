@@ -1,0 +1,22 @@
+services:
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok
+    hostname: ngrok
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    environment:
+      TZ: America/Sao_Paulo
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    networks:
+      - bplus_network
+    command:
+      - "http"
+      - "http://host.docker.internal:80"
+    ports:
+      - 4040:4040
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true
