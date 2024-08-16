@@ -13,7 +13,8 @@ services:
       - bplus_network
     command:
       - "http"
-      - "http://host.docker.internal:80"
+      - "http://homarr:7575"
+      # - "homarr:7575"
     ports:
       - 4040:4040
 networks:
