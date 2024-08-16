@@ -3,6 +3,8 @@ services:
     image: lscr.io/linuxserver/heimdall:latest
     container_name: heimdall
     hostname: heimdall
+    security_opt:
+      - no-new-privileges:true
     networks:
       - bplus_network
     environment:
@@ -10,18 +12,22 @@ services:
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
-      - ./config:/config
-    # ports:
-    #   - 80:80
-    #   - 443:443
+      # - ./config:/config
+      - /var/docker/heimdall/config:/config
+    ports:
+      - 8085:80
+      # - 443:443
     restart: unless-stopped
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.heimdall.entrypoints=websecure
-      - traefik.http.routers.heimdall.service=mobiliquest
-      - "traefik.http.routers.heimdall.rule=Host(`heimdall.bplus.lab`)"
-      -  traefik.http.services.heimdall.loadbalancer.server.port=80
-      
+      - "traefik.enable=false"
+      # HTTP Routers
+      - "traefik.http.routers.heimdall.entrypoints=websecure"
+      - "traefik.http.routers.heimdall.rule=Host(`heimdall.bplus.lab`) || Host(`www.heimdall.bplus.lab`)"
+      # Middlewares
+      # - "traefik.http.routers.homarr.middlewares=chain-no-auth@file"
+      # HTTP Services
+      - "traefik.http.routers.heimdall.service=heimdall-svc"
+      - "traefik.http.services.heimdall-svc.loadbalancer.server.port=8085"
 networks:
   bplus_network:
     name: bplus_network

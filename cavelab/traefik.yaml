@@ -13,7 +13,7 @@ services:
     ports:
       - 80:80 # HTTP entryPoints
       - 443:443 # HTTPS entryPoints
-      # - 8080:8080 # Dashbaord WebGui need to enable --api.insecure=true
+      - 8080:8080 # Dashbaord WebGui need to enable --api.insecure=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./letsencrypt:/letsencrypt
@@ -57,7 +57,7 @@ services:
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
     labels:
-      - "traefik.enable=true"
+      - "traefik.enable=false"
       # HTTP Routers
       - "traefik.http.routers.traefik-rtr.entrypoints=websecure"
       - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.bplus.lab`)"

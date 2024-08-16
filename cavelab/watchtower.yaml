@@ -9,14 +9,19 @@ services:
       - no-new-privileges:true
     environment:
       TZ: 'America/Sao_Paulo'
-      WATCHTOWER_MONITOR_ONLY: 'true'
+      WATCHTOWER_DEBUG: true
+      WATCHTOWER_CLEANUP: true
+      WATCHTOWER_REMOVE_VOLUMES: true
+      # DOCKER_AP_VERSION="1.40"
+      WATCHTOWER_INCLUDE_STOPPED: true
+      WATCHTOWER_MONITOR_ONLY: true
       WATCHTOWER_NOTIFICATIONS: email
       WATCHTOWER_NOTIFICATION_EMAIL_FROM: xx@gmail.com
       WATCHTOWER_NOTIFICATION_EMAIL_TO: xx@gmail.com
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER: smtp.gmail.com
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT: 587
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER_USER: xx@gmail.com
-      WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PASSWORD: xx
+      WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PASSWORD:  'xx'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 networks:

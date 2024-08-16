@@ -13,6 +13,13 @@ services:
       - NET_RAW
     devices:
       - /dev/net/tun
+    # environment:
+    #   # TS_AUTHKEY: tskey-auth
+    #   # TS_ROUTES: 192.168.1.9/32
+    #   TS_EXTRA_ARGS: --accept-routes
+    #   TS_STATE_DIR: /var/lib/tailscale
+    #   TS_USERSPACE: 'false'
+    #   TS_ACCEPT_DNS: 'false'
     environment:
       # - TS_HOSTNAME=${TS_HOSTNAME} # Usually not necessary for your hostname to be the same name on the tailscale network
       # - TS_AUTHKEY=${TS_AUTHKEY} # Generate auth keys here: https://login.tailscale.com/admin/settings/keys
