@@ -24,6 +24,13 @@ services:
       - ENABLE_RSPAMD=0
       - ENABLE_CLAMAV=0
       - ENABLE_FAIL2BAN=0
+      - ENABLE_POSTGREY=0
+      - ENABLE_SPAMASSASSIN=0
+      # If letsencrypt for SSL/TLS certificate is used (otherwise adapt)
+      - SSL_TYPE=letsencrypt
+      - PERMIT_DOCKER=network
+      - ONE_DIR=1
+      - SPOOF_PROTECTION=0
       - TZ=America/Sao_Paulo
     stop_grace_period: 1m
     cap_add:
