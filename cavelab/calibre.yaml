@@ -9,7 +9,7 @@ services:
       - no-new-privileges:true
       - seccomp:unconfined #optional
     volumes:
-      - ./calibre/config:/config
+      - /var/docker/calibre/config:/config
     environment:
       - TZ='America/Sao_Paulo'
       - PUID=1000
@@ -29,8 +29,10 @@ services:
     security_opt:
       - no-new-privileges:true
     volumes:
-      - ./data:/config
-      - ./calibre/library:/books
+      # - /etc/localtime:/etc/localtime:ro
+      # - /etc/timezone:/etc/timezone:ro
+      - /var/docker/calibre-web/config:/config
+      - /var/docker/calibre/config/library:/books
     environment:
       - TZ='America/Sao_Paulo'
       - PUID=1000

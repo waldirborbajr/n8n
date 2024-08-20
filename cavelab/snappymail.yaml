@@ -11,7 +11,7 @@ services:
       - bplus_network
     restart: unless-stopped
     volumes:
-      - ./data/:/snappymail/data/
+      - /var/docker/snappymail/data/:/snappymail/data/
     ports:
       - 8888:8888
       - 9000:9000

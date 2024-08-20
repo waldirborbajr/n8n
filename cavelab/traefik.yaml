@@ -13,11 +13,11 @@ services:
     ports:
       - 80:80 # HTTP entryPoints
       - 443:443 # HTTPS entryPoints
-      - 8080:8080 # Dashbaord WebGui need to enable --api.insecure=true
+      # - 8080:8080 # Dashbaord WebGui need to enable --api.insecure=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./letsencrypt:/letsencrypt
-      - /var/log:/var/log
+      - /var/docker/traefik/letsencrypt:/letsencrypt
+      - /var/docker/traefik/log:/var/log
       # - $DOCKERDIR/appdata/traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
       # # - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
       # - $DOCKERDIR/appdata/traefik3/acme/acme.json:/acme.json # Certs File 
@@ -57,7 +57,7 @@ services:
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
     labels:
-      - "traefik.enable=false"
+      - "traefik.enable=true"
       # HTTP Routers
       - "traefik.http.routers.traefik-rtr.entrypoints=websecure"
       - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.bplus.lab`)"

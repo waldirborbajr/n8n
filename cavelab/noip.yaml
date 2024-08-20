@@ -9,9 +9,9 @@ services:
     networks:
       - bplus_network    
     environment:
-      NOIP_USERNAME: wborbajr@gmail.com
-      NOIP_PASSWORD: (AmandaTB00)
-      NOIP_HOSTNAMES:  bpluslab.ddns.net
+      NOIP_USERNAME: xxx@xxxx
+      NOIP_PASSWORD: xxxx
+      NOIP_HOSTNAMES:  xxxx
       TZ: America/Sao_Paulo
       
 networks:

@@ -14,7 +14,7 @@ services:
     devices:
       - /dev/net/tun
     # environment:
-    #   # TS_AUTHKEY: tskey-auth
+    #   # TS_AUTHKEY: tskey-auth-kPEbohV8pc11CNTRL-rZa7tGAVWaaepakYXyT6aaVi7kvkh55T
     #   # TS_ROUTES: 192.168.1.9/32
     #   TS_EXTRA_ARGS: --accept-routes
     #   TS_STATE_DIR: /var/lib/tailscale
@@ -31,7 +31,7 @@ services:
       - TZ= America/Sao_Paulo
     volumes:
       # - tailscale_storage:/var/lib/tailscale
-      - /data:/var/lib # Creates a tailscale directory under /data for persistence
+      - /var/docker/tailscale/data:/var/lib # Creates a tailscale directory under /data for persistence
       - /dev/net/tun:/dev/net/tun
 volumes:
   tailscale_storage:
