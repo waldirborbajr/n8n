@@ -1,0 +1,32 @@
+services:
+  openssh-server:
+    image: lscr.io/linuxserver/openssh-server:latest
+    container_name: openssh-server
+    hostname: openssh-server #optional
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - bplus_network
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      # - PUBLIC_KEY=yourpublickey #optional
+      # - PUBLIC_KEY_FILE=/path/to/file #optional
+      # - PUBLIC_KEY_DIR=/path/to/directory/containing/_only_/pubkeys #optional
+      # - PUBLIC_KEY_URL=https://github.com/username.keys #optional
+      # - SUDO_ACCESS=false #optional
+      # - PASSWORD_ACCESS=false #optional
+      - USER_PASSWORD=admin #optional
+      # - USER_PASSWORD_FILE=/path/to/file #optional
+      - USER_NAME=admin #optional
+      # - LOG_STDOUT= #optional
+    volumes:
+      - /var/docker/openssh-server/config:/config
+    ports:
+      - 2222:2222
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true

@@ -1,0 +1,25 @@
+services:
+  minio:
+    image: docker.io/bitnami/minio:2022
+    container_name: minio
+    hostname: minio
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    ports:
+      - '9010:9000'
+      - '9011:9001'
+    networks:
+      - bplus_network
+    volumes:
+      - /var/docker/minio/data:/data
+    environment:
+      - TZ=America/Sao_Paulo
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=amandatb00
+      - MINIO_DEFAULT_BUCKETS=pihole
+
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true
