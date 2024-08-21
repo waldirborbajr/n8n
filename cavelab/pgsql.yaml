@@ -1,6 +1,6 @@
 services:
   pgsql:
-    image: 'postgres:latest'
+    image: postgres:16-alpine
     container_name: pgsql
     hostname: pgsql
     security_opt:
@@ -8,7 +8,9 @@ services:
     networks:
       - bplus_network
     environment:
+      - POSTGRES_USER=bplus
       - POSTGRES_PASSWORD=changeME
+      - POSTGRES_DB=changeME
       - PGADMIN_DEFAULT_EMAIL=wborbajr@gmail.com
       - PGADMIN_DEFAULT_PASSWORD=changeME
       - PUID=1000
@@ -21,7 +23,7 @@ services:
       # - /var/docker/pgsql/init.sql:/docker-entrypoint-initdb.d/init.sql
   
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:8.10
     container_name: pgadmin
     hostname: pgadmin
     security_opt:
@@ -58,5 +60,4 @@ networks:
 #-- add test data
 #INSERT INTO test (name, archived)
 #  VALUES ('test row 1', true),
-#  ('test row 2', false);    
-  
+#  ('test row 2', false);
