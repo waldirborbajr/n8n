@@ -6,8 +6,7 @@ services:
     restart: unless-stopped
     networks:
       - bplus_network
-    security_opt:
-      - no-new-privileges:true
+
     cap_add:
       - NET_ADMIN
       - NET_RAW

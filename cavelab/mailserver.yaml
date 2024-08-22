@@ -4,8 +4,7 @@ services:
     container_name: mailserver
     # Provide the FQDN of your mail server here (Your DNS MX record should point to this value)
     hostname: mail.bplus.lab
-    security_opt:
-      - no-new-privileges:true
+
     restart: always
     networks:
       - bplus_network

@@ -3,8 +3,7 @@ services:
     image: lscr.io/linuxserver/openssh-server:latest
     container_name: openssh-server
     hostname: openssh-server #optional
-    security_opt:
-      - no-new-privileges:true
+
     restart: unless-stopped
     networks:
       - bplus_network

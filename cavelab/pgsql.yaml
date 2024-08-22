@@ -3,8 +3,6 @@ services:
     image: postgres:16-alpine
     container_name: pgsql
     hostname: pgsql
-    security_opt:
-      - no-new-privileges:true
     networks:
       - bplus_network
     environment:
@@ -21,28 +19,6 @@ services:
     volumes:
       - /var/docker/pgsql/db-data/:/var/lib/postgresql/data/
       # - /var/docker/pgsql/init.sql:/docker-entrypoint-initdb.d/init.sql
-  
-  pgadmin:
-    image: dpage/pgadmin4:8.10
-    container_name: pgadmin
-    hostname: pgadmin
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - bplus_network
-    environment:
-      - POSTGRES_PASSWORD=changeME
-      - PGADMIN_DEFAULT_EMAIL=wborbajr@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=changeME
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Sao_Paulo
-    ports:
-      - 15433:80
-    depends_on:
-      - pgsql
-    volumes:
-      - /var/docker/pgadmin-data/:/var/lib/pgadmin/
 
 networks:
   bplus_network:

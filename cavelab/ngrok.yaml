@@ -3,8 +3,7 @@ services:
     image: ngrok/ngrok:latest
     container_name: ngrok
     hostname: ngrok
-    security_opt:
-      - no-new-privileges:true
+
     restart: unless-stopped
     environment:
       TZ: America/Sao_Paulo

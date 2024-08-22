@@ -4,14 +4,13 @@ services:
     container_name: noip
     hostname: noip
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true   
+
     networks:
       - bplus_network    
     environment:
-      NOIP_USERNAME: xxx@xxxx
-      NOIP_PASSWORD: xxxx
-      NOIP_HOSTNAMES:  xxxx
+      NOIP_USERNAME: xx
+      NOIP_PASSWORD: xx
+      NOIP_HOSTNAMES:  xx
       TZ: America/Sao_Paulo
       
 networks:

@@ -3,8 +3,7 @@ services:
     image: docker.io/bitnami/minio:2022
     container_name: minio
     hostname: minio
-    security_opt:
-      - no-new-privileges:true
+
     restart: unless-stopped
     ports:
       - '9010:9000'
