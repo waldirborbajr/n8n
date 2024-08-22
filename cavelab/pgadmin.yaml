@@ -1,0 +1,25 @@
+services:
+ 
+  pgadmin:
+    image: dpage/pgadmin4:8.10
+    container_name: pgadmin
+    hostname: pgadmin
+    networks:
+      - bplus_network
+    user: '$UID:$GID'
+    environment:
+      - POSTGRES_PASSWORD=changeME
+      - PGADMIN_DEFAULT_EMAIL=wborbajr@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=changeME
+      # - PUID=1000
+      # - PGID=1000
+      - TZ=America/Sao_Paulo
+    ports:
+      - 15433:80
+    volumes:
+      - /var/docker/pgadmin/:/var/lib/pgadmin/:rw
+
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true

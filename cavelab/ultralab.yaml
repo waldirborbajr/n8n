@@ -1,0 +1,717 @@
+version: '3.8'
+services:
+  #############################
+  ## ADGUARD - ROOT
+  #############################
+
+  adguard:
+    image: adguard/adguardhome:latest
+    container_name: adguardhome
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=adguard-net
+      - traefik.http.services.adguard-svc.loadbalancer.server.port=80
+      - traefik.http.routers.adguard-rtr.rule=Host(`adguard.${DNS_DOMAIN}`)
+      - traefik.http.routers.adguard-rtr.entrypoints=websecure
+      - traefik.http.routers.adguard-rtr.tls=true
+      - traefik.http.routers.adguard-rtr.middlewares=ipwhitelist-mddl@docker
+    networks:
+      - adguard-net
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      - "${LOCAL_MOUNT}/adguard/data:/opt/adguardhome/work"
+      - "${LOCAL_MOUNT}/adguard/conf:/opt/adguardhome/conf"
+    dns: "1.1.1.1"
+
+  #############################
+  ## ARRS
+  #############################
+
+  prowlarr:
+    image: ghcr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PUID:-1000}
+      - TZ=${TIME_ZONE}
+    volumes:
+      - ${PRIMARY_MOUNT}/prowlarr/config:/config
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=arr-net
+      - traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696
+      - traefik.http.routers.prowlarr-rtr.rule=Host(`prowlarr.${DNS_DOMAIN}`)
+      - traefik.http.routers.prowlarr-rtr.entrypoints=websecure
+      - traefik.http.routers.prowlarr-rtr.tls=true
+      - traefik.http.routers.prowlarr-rtr.middlewares=ipwhitelist-mddl@docker,traefik-forward-auth@docker
+    restart: unless-stopped
+    networks:
+      - arr-net
+
+  radarr:
+    image: ghcr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PUID:-1000}
+      - TZ=${TIME_ZONE}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=arr-net
+      - traefik.http.services.radarr-svc.loadbalancer.server.port=7878
+      - traefik.http.routers.radarr-rtr.rule=Host(`radarr.${DNS_DOMAIN}`)
+      - traefik.http.routers.radarr-rtr.entrypoints=websecure
+      - traefik.http.routers.radarr-rtr.tls=true
+      - traefik.http.routers.radarr-rtr.middlewares=ipwhitelist-mddl@docker
+    volumes:
+      - ${PRIMARY_MOUNT}/radarr/data:/config
+      - ${PRIMARY_MOUNT}/plex/media/:/data
+    networks:
+      - arr-net
+
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr
+    container_name: sonarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PUID:-1000}
+      - TZ=${TIME_ZONE}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=arr-net
+      - traefik.http.services.sonarr-svc.loadbalancer.server.port=8989
+      - traefik.http.routers.sonarr-rtr.rule=Host(`sonarr.${DNS_DOMAIN}`)
+      - traefik.http.routers.sonarr-rtr.entrypoints=websecure
+      - traefik.http.routers.sonarr-rtr.tls=true
+      - traefik.http.routers.sonarr-rtr.middlewares=ipwhitelist-mddl@docker
+    volumes:
+      - ${PRIMARY_MOUNT}/sonarr/data:/config
+      - ${PRIMARY_MOUNT}/plex/media/:/data
+    networks:
+      - arr-net
+
+  #############################
+  ## CALIBRE
+  #############################
+
+  calibre_web:
+    image: ghcr.io/linuxserver/calibre-web:latest
+    container_name: calibre_web
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=calibre-net
+      - traefik.http.services.calibre-svc.loadbalancer.server.port=8083
+      - traefik.http.routers.calibre-rtr.rule=Host(`calibre.${DNS_DOMAIN}`)
+      - traefik.http.routers.calibre-rtr.entrypoints=websecure
+      - traefik.http.routers.calibre-rtr.tls=true
+      - traefik.http.routers.calibre-rtr.middlewares=traefik-forward-auth@docker
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PUID:-1000}
+      - "TZ=${TIME_ZONE}"
+      - "DOCKER_MODS=linuxserver/calibre-web:calibre"
+    volumes:
+      - ${PRIMARY_MOUNT}/calibre/config:/config
+      - ${PRIMARY_MOUNT}/calibre/books:/books
+    networks:
+      - calibre-net
+
+  #############################
+  ## CHANGEDETECTION
+  #############################
+
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io
+    container_name: changedetection
+    restart: unless-stopped
+    volumes:
+      - ${SECONDARY_MOUNT}/changedetection/datastore:/datastore
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PUID:-1000}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=changedetection-net
+      - traefik.http.services.changedetection-svc.loadbalancer.server.port=5000
+      - traefik.http.routers.changedetection-rtr.rule=Host(`changedetection.${DNS_DOMAIN}`)
+      - traefik.http.routers.changedetection-rtr.entrypoints=websecure
+      - traefik.http.routers.changedetection-rtr.tls=true
+      - traefik.http.routers.changedetection-rtr.middlewares=traefik-forward-auth@docker
+    networks:
+      - changedetection-net
+
+  #############################
+  ## CLOUDFLARE - ROOT
+  #############################
+
+  cloudflare:
+    image: oznu/cloudflare-ddns:latest
+    restart: unless-stopped
+    container_name: cloudflare
+    labels:
+      - traefik.enable=false
+    environment:
+      - "API_KEY=${CF_TOKEN}"
+      - "ZONE=${DNS_DOMAIN}"
+      - "SUBDOMAIN=${SUBDOMAIN}"
+      - "DNS_SERVER=1.0.0.1"
+    dns: 1.1.1.1
+
+  #############################
+  ## CLOUDFLARE-COMPANION - ROOT
+  #############################
+
+  cloudflare-companion:
+    image: tiredofit/traefik-cloudflare-companion
+    container_name: cloudflare-companion
+    restart: unless-stopped
+    volumes:
+      - ${SOCK_PATH:-/var/run/docker.sock}:/var/run/docker.sock
+    environment:
+      - "TRAEFIK_VERSION=2"
+      # - "CF_EMAIL=" Leave blank for scopepd
+      - "CF_TOKEN=${CF_TOKEN}"
+      - "TARGET_DOMAIN=${SUBDOMAIN}.${DNS_DOMAIN}"
+      - "DOMAIN1=${DNS_DOMAIN}"
+      - "DOMAIN1_ZONE_ID=${DNS_DOMAIN_ZONE_ID}"
+    dns: 1.1.1.1
+
+  #############################
+  ## DRONE CI - ROOT
+  #############################
+
+  drone:
+    image: drone/drone:1
+    restart: unless-stopped
+    container_name: drone
+    user: ${PUID:-1000}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=drone-net
+      - traefik.http.services.drone-svc.loadbalancer.server.port=80
+      - traefik.http.routers.drone-rtr.rule=Host(`drone.${DNS_DOMAIN}`)
+      - traefik.http.routers.drone-rtr.entrypoints=websecure
+      - traefik.http.routers.drone-rtr.tls=true
+    environment:
+      - DRONE_GITHUB_CLIENT_ID=${DRONE_GITHUB_CLIENT_ID}
+      - DRONE_GITHUB_CLIENT_SECRET=${DRONE_GITHUB_CLIENT_SECRET}
+      - DRONE_RPC_SECRET=${DRONE_RPC_SECRET}
+      - DRONE_SERVER_HOST=drone.${DNS_DOMAIN}
+      - DRONE_SERVER_PROTO=https
+      - DRONE_USER_CREATE=${DRONE_USER_CREATE}
+      - DRONE_USER_FILTER=${DRONE_USER_FILTER}
+    volumes:
+      - ${PRIMARY_MOUNT}/drone/server/data:/data
+    networks:
+      - drone-net
+      - drone-private-net
+
+  drone-runner:
+    image: drone/drone-runner-docker:1
+    restart: unless-stopped
+    container_name: drone_runner_1
+    environment:
+      - DRONE_RPC_PROTO=http
+      - DRONE_RPC_HOST=drone
+      - DRONE_RPC_SECRET=${DRONE_RPC_SECRET}
+      - DRONE_RUNNER_CAPACITY=2
+      - DRONE_RUNNER_NAME=drone-runner-1
+    labels: 
+      - traefik.enable=false
+    volumes:
+      - ${SOCK_PATH:-/var/run/docker.sock}:/var/run/docker.sock
+    networks:
+      - drone-private-net
+
+  #############################
+  ## DUPLICATI
+  #############################
+
+  duplicati:
+    image: ghcr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=duplicati-net
+      - traefik.http.services.duplicati-svc.loadbalancer.server.port=8200
+      - traefik.http.routers.duplicati-rtr.rule=Host(`backups.${DNS_DOMAIN}`)
+      - traefik.http.routers.duplicati-rtr.entrypoints=websecure
+      - traefik.http.routers.duplicati-rtr.tls=true
+      - traefik.http.routers.duplicati-rtr.middlewares=ipwhitelist-mddl@docker,traefik-forward-auth@docker
+    environment:
+      - "TZ=${TIME_ZONE}"
+      - "PUID=${XID:-1000}"
+      - "PGID=${XID:-1000}"
+    volumes:
+      - ${PRIMARY_MOUNT}:/sources/primary
+      - ${LOCAL_MOUNT}:/sources/local
+      - ${SECONDARY_MOUNT}/duplicati/config:/config
+      - ${SECONDARY_MOUNT}/duplicati/backups:/backups
+    networks:
+      - duplicati-net
+
+  #############################
+  ## JELLYFIN
+  #############################
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin
+    container_name: jellyfin
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=plex-net
+      - traefik.http.services.jellyfin-svc.loadbalancer.server.port=8096
+      - traefik.http.routers.jellyfin-rtr.rule=Host(`jellyfin.${DNS_DOMAIN}`)
+      - traefik.http.routers.jellyfin-rtr.entrypoints=websecure
+      - traefik.http.routers.jellyfin-rtr.tls=true
+    environment:
+      - "TZ=${TIME_ZONE}"
+      - "PUID=${PUID:-1000}"
+      - "PGID=${PUID:-1000}"
+      - "JELLYFIN_PublishedServerUrl=jellyfin.${DNS_DOMAIN}"
+    volumes:
+      - ${PRIMARY_MOUNT}/jellyfin/config:/config
+      - ${PRIMARY_MOUNT}/plex/media:/data
+    devices:
+      - /dev/dri:/dev/dri
+    networks:
+      - plex-net
+
+  #############################
+  ## KOBODL
+  #############################
+
+  kobodl:
+    image: ghcr.io/subdavis/kobodl:latest
+    container_name: kobodl
+    restart: unless-stopped
+    user: ${PUID:-1000}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=kobodl-net
+      - traefik.http.services.kobodl-svc.loadbalancer.server.port=5000
+      - traefik.http.routers.kobodl-rtr.rule=Host(`kobodl.${DNS_DOMAIN}`)
+      - traefik.http.routers.kobodl-rtr.entrypoints=websecure
+      - traefik.http.routers.kobodl-rtr.tls=true
+      - traefik.http.routers.kobodl-rtr.middlewares=traefik-forward-auth@docker
+    volumes:
+      - ${PRIMARY_MOUNT}/kobodl/kobodl.json:/home/kobodl.json
+      - ${PRIMARY_MOUNT}/kobodl/downloads:/home/downloads
+    command: --config /home/kobodl.json serve -h 0.0.0.0 --output-dir /home/downloads
+    networks:
+      - kobodl-net
+
+  #############################
+  ## PORTAINER - ROOT
+  #############################
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    container_name: portainer
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=portainer-net
+      - traefik.http.services.portainer-svc.loadbalancer.server.port=9000
+      - traefik.http.routers.portainer-rtr.rule=Host(`portainer.${DNS_DOMAIN}`)
+      - traefik.http.routers.portainer-rtr.entrypoints=websecure
+      - traefik.http.routers.portainer-rtr.tls=true
+      - traefik.http.routers.portainer-rtr.middlewares=ipwhitelist-mddl@docker,traefik-forward-auth@docker
+    volumes:
+      - ${PRIMARY_MOUNT}/portainer/data/:/data
+      - ${SOCK_PATH:-/var/run/docker.sock}:/var/run/docker.sock
+    networks:
+      - portainer-net
+
+  #############################
+  ## RSSHUB
+  #############################
+
+  rsshub:
+    image: diygod/rsshub:chromium-bundled
+    container_name: rsshub
+    restart: always
+    user: ${PUID:-1000}
+    environment:
+      NODE_ENV: production
+      CACHE_TYPE: redis
+      REDIS_URL: "redis://rsshub_redis:6379/"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=rsshub-net
+      - traefik.http.services.rsshub-svc.loadbalancer.server.port=1200
+      - traefik.http.routers.rsshub-rtr.rule=Host(`rsshub.${DNS_DOMAIN}`)
+      - traefik.http.routers.rsshub-rtr.entrypoints=websecure
+      - traefik.http.routers.rsshub-rtr.tls=true
+    depends_on:
+      - redis
+    networks:
+      - rsshub-net
+      - rsshub-private-net
+
+  redis:
+    image: redis:alpine
+    restart: always
+    container_name: rsshub_redis
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+    networks:
+      - rsshub-private-net
+
+  #############################
+  ## TRANSMISSION_TORRENT
+  #############################
+
+  transmission:
+    image: haugene/transmission-openvpn:4
+    container_name: transmission
+    restart: unless-stopped
+    labels: 
+      - "com.centurylinklabs.watchtower.enable=false"
+      - traefik.enable=true
+      - traefik.docker.network=transmission-net
+      - traefik.http.services.transmission-svc.loadbalancer.server.port=9091
+      - traefik.http.routers.transmission-rtr.rule=Host(`torrent.${DNS_DOMAIN}`)
+      - traefik.http.routers.transmission-rtr.entrypoints=websecure
+      - traefik.http.routers.transmission-rtr.tls=true
+      - traefik.http.routers.transmission-rtr.middlewares=traefik-forward-auth@docker,ipwhitelist-mddl@docker
+    networks:
+      - arr-net
+      - transmission-net
+    dns: 1.1.1.1
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+    cap_add:
+      - NET_ADMIN
+    volumes:  
+      - ${PRIMARY_MOUNT}/plex/media/:/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PUID:-1000}
+      - "OPENVPN_CONFIG=${OPENVPN_CONFIG}"
+      - "OPENVPN_PROVIDER=${OPENVPN_PROVIDER}"
+      - "OPENVPN_USERNAME=${TORRENT_USERNAME}"
+      - "OPENVPN_PASSWORD=${TORRENT_PASSWORD}"
+      - "OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60"
+      - "LOCAL_NETWORK=${LOCAL_NETWORK}"
+      - "PIA_OPENVPN_CONFIG_BUNDLE=openvpn-tcp"
+
+  #############################
+  ## TRAEFIK - ROOT
+  #############################
+
+  traefik:
+    image: traefik:v2.4
+    restart: unless-stopped
+    container_name: traefik
+    command: >
+      --api.insecure=true
+      --serversTransport.insecureSkipVerify=true
+      --accesslog=true
+      --accesslog.filepath=/var/log/traefik/access.log
+      --accesslog.fields.headers.names.Content-Type=keep
+      --accesslog.fields.headers.names.Referer=keep
+      --accesslog.fields.headers.names.User-Agent=keep
+      --providers.docker=true
+      --providers.docker.exposedByDefault=false
+      --entrypoints.web.address=:80
+      --entrypoints.websecure.address=:443
+      --entrypoints.websecure.forwardedHeaders.trustedIPs=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/12,172.64.0.0/13,131.0.72.0/22
+      --entrypoints.websecure.http.tls.certresolver=myresolver
+      --entrypoints.websecure.http.tls.domains[0].main=*.${DNS_DOMAIN}
+      --entrypoints.websecure.http.tls.domains[0].sans=${DNS_DOMAIN}
+      --certificatesResolvers.myresolver.acme.caServer="https://acme-v02.api.letsencrypt.org/directory"
+      --certificatesresolvers.myresolver.acme.dnschallenge=true
+      --certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare
+      --certificatesresolvers.myresolver.acme.email="${LETSENCRYPT_EMAIL}"
+      --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      --certificatesresolvers.myresolver.acme.dnschallenge.resolvers==1.1.1.1:53,1.0.0.1:53
+    labels:
+      - "traefik.enable=true"
+      # Traefik HTTPS Redirect
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https-mddl@docker"
+      - "traefik.http.middlewares.redirect-to-https-mddl.redirectscheme.scheme=https"
+      # Other middlewares
+      - "traefik.http.middlewares.ipwhitelist-mddl.ipwhitelist.sourcerange=127.0.0.1/32,${SUBNET}"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://auth:4181"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
+      # For Vaultwarden
+      - "traefik.http.middlewares.bw-stripPrefix.stripprefix.prefixes=/notifications/hub"
+      - "traefik.http.middlewares.bw-stripPrefix.stripprefix.forceSlash=false"
+      # Traefik Dashboard config
+      - traefik.http.services.traefik-svc.loadbalancer.server.port=8080
+      - traefik.http.routers.traefik-rtr.rule=Host(`traefik.${DNS_DOMAIN}`)
+      - traefik.http.routers.traefik-rtr.entrypoints=websecure
+      - traefik.http.routers.traefik-rtr.tls=true
+      - traefik.http.routers.traefik-rtr.middlewares=traefik-forward-auth@docker
+    environment:
+      - CF_API_EMAIL=${CF_EMAIL}
+      - CF_DNS_API_TOKEN=${CF_TOKEN}
+      - CF_ZONE_API_TOKEN=${CF_TOKEN}
+    volumes:
+      - ${SOCK_PATH:-/var/run/docker.sock}:/var/run/docker.sock
+      - "${LOCAL_MOUNT}/traefik/letsencrypt:/letsencrypt"
+      - "${LOCAL_MOUNT}/traefik/logs:/var/log/traefik"
+      - "./etc/traefik:/etc/traefik"
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - traefik-net
+      - adguard-net
+      - arr-net
+      - auth-net
+      - calibre-net
+      - changedetection-net
+      - drone-net
+      - duplicati-net
+      - kobodl-net
+      - plex-net
+      - portainer-net
+      - rsshub-net
+      - transmission-net
+      - umami-net
+      - unifi-net
+      - vaultwarden-net
+      - webdav-net
+     
+  traefik-forward-auth:
+    image: thomseddon/traefik-forward-auth:latest
+    container_name: auth
+    restart: unless-stopped
+    user: ${PUID:-1000}
+    networks:
+      - auth-net
+    environment:
+      - "PROVIDERS_GOOGLE_CLIENT_ID=${AUTH_PROVIDERS_GOOGLE_CLIENT_ID}"
+      - "PROVIDERS_GOOGLE_CLIENT_SECRET=${AUTH_PROVIDERS_GOOGLE_CLIENT_SECRET}"
+      - "SECRET=${AUTH_SECRET}"
+      - "WHITELIST=${AUTH_WHITELIST}"
+    command: >
+      --cookie-domain="${DNS_DOMAIN}"
+      --auth-host="auth.${DNS_DOMAIN}"
+      --config=/etc/authconfig.ini
+    volumes:
+      - "./etc/authconfig.ini:/etc/authconfig.ini:ro"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=auth-net
+      - traefik.http.services.traefik-forward-auth-svc.loadbalancer.server.port=4181
+      - traefik.http.routers.auth-rtr.rule=Host(`auth.${DNS_DOMAIN}`)
+      - traefik.http.routers.auth-rtr.entrypoints=websecure
+      - traefik.http.routers.auth-rtr.tls=true
+      - traefik.http.routers.auth-rtr.middlewares=traefik-forward-auth
+
+  #############################
+  ## Umami
+  #############################
+
+  umami_postgres:
+    image: postgres:15-alpine
+    restart: always
+    container_name: umami_postgres
+    volumes:
+      - ${PRIMARY_MOUNT}/postgres_15:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: umami
+    networks:
+      - umami-private-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    restart: always
+    container_name: umami
+    user: ${PUID:-1000}
+    depends_on:
+      umami_postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://umami:umami@umami_postgres:5432/umami
+      DATABASE_TYPE: postgresql
+      APP_SECRET: ${DNS_DOMAIN_ZONE_ID}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=umami-net
+      - traefik.http.services.umami-svc.loadbalancer.server.port=3000
+      - traefik.http.routers.umami-rtr.rule=Host(`umami.${DNS_DOMAIN}`)
+      - traefik.http.routers.umami-rtr.entrypoints=websecure
+      - traefik.http.routers.umami-rtr.tls=true
+    networks:
+      - umami-net
+      - umami-private-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  #############################
+  ## UNIFI CONTROLLER
+  #############################
+
+  unifi_controller:
+    image: ghcr.io/linuxserver/unifi-controller:latest
+    container_name: unifi_controller
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PUID:-1000}
+      - MEM_LIMIT=1024
+    ports:
+      - "3478:3478/udp" # STUN
+      - "10001:10001/udp" # Discovery
+      - "8080:8080" # Device comms
+      - "6789:6789" # Mobile speedtest
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=unifi-net
+      - traefik.http.routers.ubiq-rtr.rule=Host(`unifi.${DNS_DOMAIN}`)
+      - traefik.http.routers.ubiq-rtr.entrypoints=websecure
+      - traefik.http.routers.ubiq-rtr.tls=true
+      - traefik.http.routers.ubiq-rtr.middlewares=ipwhitelist-mddl@docker
+      - traefik.http.services.ubiq-svc.loadbalancer.server.scheme=https
+      - traefik.http.services.ubiq-svc.loadbalancer.server.port=8443
+    volumes:
+      - "${PRIMARY_MOUNT}/unifi/config/:/config"
+    networks:
+      - unifi-net
+
+  #############################
+  ## VAULTWARDEN
+  #############################
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    user: ${PUID:-1000}
+    volumes:
+      - "${PRIMARY_MOUNT}/vaultwarden/data/:/data"
+    environment:
+      - WEBSOCKET_ENABLED=true
+    networks:
+      - vaultwarden-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=vaultwarden-net"
+      # Entry Point for https
+      - "traefik.http.routers.vaultwarden-rtr.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden-rtr.rule=Host(`vaultwarden.${DNS_DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden-rtr.service=vaultwarden-svc"
+      - "traefik.http.services.vaultwarden-svc.loadbalancer.server.port=80"
+      # websocket
+      - "traefik.http.routers.vaultwarden-ws-rtr.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden-ws-rtr.rule=Host(`vaultwarden.${DNS_DOMAIN}`) && Path(`/notifications/hub`)"
+      - "traefik.http.middlewares.vaultwarden-ws-rtr=bw-stripPrefix@file"
+      - "traefik.http.routers.vaultwarden-ws-rtr.service=vaultwarden-ws-svc"
+      - "traefik.http.services.vaultwarden-ws-svc.loadbalancer.server.port=3012"
+
+  #############################
+  ## WEBDAV
+  #############################
+
+  webdav:
+    image: bytemark/webdav
+    container_name: webdav
+    restart: always
+    environment:
+      AUTH_TYPE: Digest
+      USERNAME: admin
+      PASSWORD: password
+    volumes:
+      - "${PRIMARY_MOUNT}/webdav:/var/lib/dav"
+    networks:
+      - webdav-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=webdav-net"
+      - "traefik.http.routers.webdav-rtr.entrypoints=websecure"
+      - "traefik.http.routers.webdav-rtr.rule=Host(`webdav.${DNS_DOMAIN}`)"
+      - "traefik.http.routers.webdav-rtr.service=webdav-svc"
+      - "traefik.http.services.webdav-svc.loadbalancer.server.port=80"
+      - "traefik.http.routers.webdav-rtr.middlewares=ipwhitelist-mddl@docker"
+
+  #############################
+  ## WATCHTOWER - ROOT
+  #############################
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    command: --schedule "0 10 3 * * *" --cleanup
+    labels:
+      - traefik.enable=false
+    volumes:
+      - ${SOCK_PATH:-/var/run/docker.sock}:/var/run/docker.sock
+      - "${PRIMARY_MOUNT}/watchtower/config/:/config"
+      - "${PRIMARY_MOUNT}/watchtower/docker-config.json:/config.json"
+
+networks:
+  adguard-net:
+    name: adguard-net
+  arr-net:
+    name: arr-net
+  auth-net:
+    name: auth-net
+  calibre-net:
+    name: calibre-net
+  changedetection-net:
+    name: changedetection-net
+  drone-net:
+    name: drone-net
+  drone-private-net:
+    name: drone-private-net
+  duplicati-net:
+    name: duplicati-net
+  kobodl-net:
+    name: kobodl-net
+  plex-net:
+    name: plex-net
+  portainer-net:
+    name: portainer-net
+  rsshub-net:
+    name: rsshub-net
+  rsshub-private-net:
+    name: rsshub-private-net
+  transmission-net:
+    name: transmission-net
+  traefik-net:
+    name: traefik-net
+  umami-net:
+    name: umami-net
+  umami-private-net:
+    name: umami-private-net
+  unifi-net:
+    name: unifi-net
+  vaultwarden-net:
+    name: vaultwarden-net
+  webdav-net:
+    name: webdav-net
+
+volumes:
+  redis-data:

@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  portainer-backup:
+    image: savagesoftware/portainer-backup:latest
+    container_name: portainer-backup
+    hostname: portainer-backup
+    restart: unless-stopped
+    networks:
+      - bplus_network
+    command: schedule
+    environment:
+      TZ: America/Sao_Paulo
+      PORTAINER_BACKUP_URL: "http://localhost:9002"
+      PORTAINER_BACKUP_TOKEN: "PORTAINER_ACCESS_TOKEN"
+      PORTAINER_BACKUP_PASSWORD: ""
+      PORTAINER_BACKUP_OVERWRITE: 1
+      PORTAINER_BACKUP_SCHEDULE: "0 0 0 * * *"
+      PORTAINER_BACKUP_STACKS: 1
+      PORTAINER_BACKUP_DRYRUN: 0
+      PORTAINER_BACKUP_CONCISE: 1
+      PORTAINER_BACKUP_DIRECTORY: "/backup"
+      PORTAINER_BACKUP_FILENAME: "portainer-backup.tar.gz"
+    volumes:
+      - /var/docker/portainer-backup/backup:/backup
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true      

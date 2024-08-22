@@ -1,0 +1,25 @@
+
+services:
+  sqlitebrowser:
+    image: lscr.io/linuxserver/sqlitebrowser:latest
+    container_name: sqlitebrowser
+    hostname: sqlitebrowser
+    ports:
+      - 3000:3000
+      - 3001:3001
+    networks:
+      - bplus_network
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /var/docker/sqlitebrowser/config:/config
+    
+networks:
+  bplus_network:
+    name: bplus_network
+    external: true    
