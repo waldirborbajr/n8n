@@ -18,7 +18,16 @@ services:
       - 15433:80
     volumes:
       - /var/docker/pgadmin/:/var/lib/pgadmin/:rw
-
+    labels:
+      - "traefik.enable=false"
+      # HTTP Routers
+      - "traefik.http.routers.pgadmin.entrypoints=websecure"
+      - traefik.http.routers.adguard-rtr.rule=Host(`pgadmin.${DNS_DOMAIN}`) || Host(`www.pgadmin.${DNS_DOMAIN}`)
+      # Middlewares
+      # - "traefik.http.routers.pgadmin.middlewares=chain-no-auth@file"
+      # HTTP Services
+      - "traefik.http.routers.pgadmin.service=pgadmin-svc"
+      - "traefik.http.services.pgadmin-svc.loadbalancer.server.port=15433"
 networks:
   bplus_network:
     name: bplus_network

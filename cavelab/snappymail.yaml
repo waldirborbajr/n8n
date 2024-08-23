@@ -14,6 +14,16 @@ services:
     ports:
       - 8888:8888
       - 9000:9000
+    labels:
+      - "traefik.enable=false"
+      # HTTP Routers
+      - "traefik.http.routers.snappymail.entrypoints=websecure"
+      - traefik.http.routers.adguard-rtr.rule=Host(`snappymail.${DNS_DOMAIN}`) || Host(`www.snappymail.${DNS_DOMAIN}`)
+      # Middlewares
+      # - "traefik.http.routers.snappymail.middlewares=chain-no-auth@file"
+      # HTTP Services
+      - "traefik.http.routers.snappymail.service=snappymail-svc"
+      - "traefik.http.services.snappymail-svc.loadbalancer.server.port=8888"
 networks:
   bplus_network:
     name: bplus_network

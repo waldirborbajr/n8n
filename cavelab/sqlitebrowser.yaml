@@ -18,6 +18,16 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /var/docker/sqlitebrowser/config:/config
+    labels:
+      - "traefik.enable=false"
+      # HTTP Routers
+      - "traefik.http.routers.sqlitebrowser.entrypoints=websecure"
+      - traefik.http.routers.adguard-rtr.rule=Host(`sqlitebrowser.${DNS_DOMAIN}`) || Host(`www.sqlitebrowser.${DNS_DOMAIN}`)
+      # Middlewares
+      # - "traefik.http.routers.sqlitebrowser.middlewares=chain-no-auth@file"
+      # HTTP Services
+      - "traefik.http.routers.sqlitebrowser.service=sqlitebrowser-svc"
+      - "traefik.http.services.sqlitebrowser-svc.loadbalancer.server.port=3000"
     
 networks:
   bplus_network:

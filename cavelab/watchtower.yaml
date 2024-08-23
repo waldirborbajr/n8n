@@ -24,6 +24,16 @@ services:
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PASSWORD:  '(AmandaTB00)'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=false"
+      # HTTP Routers
+      - "traefik.http.routers.watchtower.entrypoints=websecure"
+      - traefik.http.routers.adguard-rtr.rule=Host(`watchtower.${DNS_DOMAIN}`) || Host(`www.watchtower.${DNS_DOMAIN}`)
+      # Middlewares
+      # - "traefik.http.routers.watchtower.middlewares=chain-no-auth@file"
+      # HTTP Services
+      - "traefik.http.routers.watchtower.service=watchtower-svc"
+      - "traefik.http.services.watchtower-svc.loadbalancer.server.port=8089"
 networks:
   bplus_network:
     name: bplus_network

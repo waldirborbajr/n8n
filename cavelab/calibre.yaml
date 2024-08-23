@@ -43,6 +43,16 @@ services:
       - calibre
     ports:
       - 8083:8083
+    labels:
+      - "traefik.enable=false"
+      # HTTP Routers
+      - "traefik.http.routers.calibre-web.entrypoints=websecure"
+      - traefik.http.routers.adguard-rtr.rule=Host(`calibre.${DNS_DOMAIN}`) || Host(`www.calibre.${DNS_DOMAIN}`)
+      # Middlewares
+      # - "traefik.http.routers.calibre-web.middlewares=chain-no-auth@file"
+      # HTTP Services
+      - "traefik.http.routers.calibre-web.service=calibre-web-svc"
+      - "traefik.http.services.calibre-web-svc.loadbalancer.server.port=8083"
 networks:
   bplus_network:
     name: bplus_network

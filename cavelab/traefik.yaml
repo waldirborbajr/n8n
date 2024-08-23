@@ -56,10 +56,15 @@ services:
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
     labels:
-      - "traefik.enable=true"
+      - "traefik.enable=false"
       # HTTP Routers
-      - "traefik.http.routers.traefik-rtr.entrypoints=websecure"
-      - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.bplus.lab`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - traefik.http.routers.adguard-rtr.rule=Host(`traefik.${DNS_DOMAIN}`) || Host(`www.traefik.${DNS_DOMAIN}`)
+      # Middlewares
+      # - "traefik.http.routers.traefik.middlewares=chain-no-auth@file"
+      # HTTP Services
+      - "traefik.http.routers.traefik.service=traefik-svc"
+      - "traefik.http.services.traefik-svc.loadbalancer.server.port=8080"
       # Services - API
       - "traefik.http.routers.traefik-rtr.service=api@internal"
       # Middlewares

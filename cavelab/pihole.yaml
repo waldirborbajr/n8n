@@ -47,7 +47,7 @@ services:
       - "traefik.enable=false"
       # HTTP Routers
       - "traefik.http.routers.pihole.entrypoints=websecure"
-      - "traefik.http.routers.whoami.rule=Host(`pihole.bplus.lab`) || Host(`www.pihole.bplus.lab`)"
+      - traefik.http.routers.adguard-rtr.rule=Host(`pihole.${DNS_DOMAIN}`) || Host(`www.pihole.${DNS_DOMAIN}`)
       # Middlewares
       # - "traefik.http.routers.pihole.middlewares=chain-no-auth@file"
       # HTTP Services

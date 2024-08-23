@@ -3,8 +3,6 @@ services:
     image: ghcr.io/ajnart/homarr:latest
     container_name: homarr
     hostname: homarr
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     environment:
       TZ: America/Sao_Paulo
@@ -22,14 +20,13 @@ services:
     labels:
       - "traefik.enable=false"
       # HTTP Routers
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.rule=Host(`homarr.bplus.lab`) || Host(`www.homarr.bplus.lab`)"
+      - "traefik.http.routers.homarr.entrypoints=websecure"
+      - traefik.http.routers.adguard-rtr.rule=Host(`homarr.${DNS_DOMAIN}`) || Host(`www.homarr.${DNS_DOMAIN}`)
       # Middlewares
       # - "traefik.http.routers.homarr.middlewares=chain-no-auth@file"
       # HTTP Services
       - "traefik.http.routers.homarr.service=homarr-svc"
       - "traefik.http.services.homarr-svc.loadbalancer.server.port=7575"
-      
 networks:
   bplus_network:
     name: bplus_network

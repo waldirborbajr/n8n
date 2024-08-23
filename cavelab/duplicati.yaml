@@ -17,6 +17,16 @@ services:
       - /var/docker/duplicati/config:/config
       - /var/docker/duplicati/backups:/backups
       - /var/docker/duplicati/source:/source
+    labels:
+      - "traefik.enable=false"
+      # HTTP Routers
+      - "traefik.http.routers.duplicati.entrypoints=websecure"
+      - traefik.http.routers.adguard-rtr.rule=Host(`duplicati.${DNS_DOMAIN}`) || Host(`www.duplicati.${DNS_DOMAIN}`)
+      # Middlewares
+      # - "traefik.http.routers.duplicati.middlewares=chain-no-auth@file"
+      # HTTP Services
+      - "traefik.http.routers.duplicati.service=duplicati-svc"
+      - "traefik.http.services.duplicati-svc.loadbalancer.server.port=8200"
 
 networks:
   bplus_network:

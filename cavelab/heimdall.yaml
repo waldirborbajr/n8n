@@ -3,8 +3,6 @@ services:
     image: lscr.io/linuxserver/heimdall:latest
     container_name: heimdall
     hostname: heimdall
-    security_opt:
-      - no-new-privileges:true
     networks:
       - bplus_network
     environment:
@@ -22,9 +20,9 @@ services:
       - "traefik.enable=false"
       # HTTP Routers
       - "traefik.http.routers.heimdall.entrypoints=websecure"
-      - "traefik.http.routers.heimdall.rule=Host(`heimdall.bplus.lab`) || Host(`www.heimdall.bplus.lab`)"
+      - traefik.http.routers.adguard-rtr.rule=Host(`heimdall.${DNS_DOMAIN}`) || Host(`www.heimdall.${DNS_DOMAIN}`)
       # Middlewares
-      # - "traefik.http.routers.homarr.middlewares=chain-no-auth@file"
+      # - "traefik.http.routers.heimdall.middlewares=chain-no-auth@file"
       # HTTP Services
       - "traefik.http.routers.heimdall.service=heimdall-svc"
       - "traefik.http.services.heimdall-svc.loadbalancer.server.port=8085"
