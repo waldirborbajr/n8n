@@ -4,37 +4,31 @@ services:
     container_name: tailscale
     hostname: cavelab
     restart: unless-stopped
+
     networks:
       - bplus_network
-
     cap_add:
       - NET_ADMIN
       - NET_RAW
     devices:
       - /dev/net/tun
-    # environment:
-    #   # TS_AUTHKEY: tskey-auth-kPEbohV8pc11CNTRL-rZa7tGAVWaaepakYXyT6aaVi7kvkh55T
-    #   # TS_ROUTES: 192.168.1.9/32
-    #   TS_EXTRA_ARGS: --accept-routes
-    #   TS_STATE_DIR: /var/lib/tailscale
-    #   TS_USERSPACE: 'false'
-    #   TS_ACCEPT_DNS: 'false'
     environment:
-      # - TS_HOSTNAME=${TS_HOSTNAME} # Usually not necessary for your hostname to be the same name on the tailscale network
-      # - TS_AUTHKEY=${TS_AUTHKEY} # Generate auth keys here: https://login.tailscale.com/admin/settings/keys
-      # - TS_ROUTES=${TS_ROUTES} # Creates a subnet router for Tailscale. Use your subnet's CIDR in the form: 192.168.1.0/24
-      # - TS_ACCEPT_DNS=${TS_ACCEPT_DNS} # Set to false for Pi-hole Docker setups
+      - TS_AUTHKEY=tskey-auth-kAigSAfEHg11CNTRL-vmKXPVY9YdbvnFAfAQeGdbDTyCQiXae7K # To use an auth key for an ephemeral node; Generate from your admin Dashboard
+      - TS_ACCEPT_DNS=false # To opt out of Tailscale DNS
+      - TS_EXTRA_ARGS=--advertise-exit-node # To allow setting of exit nodes
+      - TS_HOSTNAME=cavelab # To set a unique machine name for the device
+      - TS_STATE_DIR=/var/lib/tailscale # To make the machine maintain with the same IP and name
       - TS_SOCKET=/var/run/tailscale/tailscaled.sock # Specifying the /var/lib/tailscale/tailscaled.sock location allows use of standard Tailscale commands 
-      - TS_EXTRA_ARGS=--accept-routes # Add any other supported arguments in the docker commandline style: e.g. --advertise-exit-node
-      - TS_STATE_DIR=/var/lib/tailscale # Required to create a persistent container state that will survive reboots
+      # - TS_EXTRA_ARGS=--accept-routes # Add any other supported arguments in the docker commandline style: e.g. --advertise-exit-node
+      # - TS_STATE_DIR=/var/lib/tailscale # Required to create a persistent container state that will survive reboots
       - TZ= America/Sao_Paulo
     volumes:
-      # - tailscale_storage:/var/lib/tailscale
-      - /var/docker/tailscale/data:/var/lib # Creates a tailscale directory under /data for persistence
-      - /dev/net/tun:/dev/net/tun
-volumes:
-  tailscale_storage:
-    external: true    
+      # Mount volume from host system to container
+      # [host system volume]:[container volume]:[permission]
+      - "/var/docker/tailscale/config:/etc/tailscale" # Mount configurations folder
+      - "/var/docker/tailscale/data:/var/lib/tailscale" # Mount applications data
+      - "/dev/net/tun:/dev/net/tun" # Network
+
 networks:
   bplus_network:
     name: bplus_network
